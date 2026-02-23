@@ -1,5 +1,4 @@
-#include "ArrayEror.h"
-#include "TypeInfo.h"
+#include "StringType.h"
 
 #include <stdlib.h>
 #include <string.h>
