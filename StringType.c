@@ -28,15 +28,14 @@ void string_free(void* elem,ArrayErrors* error){
     if (elem != NULL) {
         free(elem);
         if(error) *error = ARRAY_OK;
+        return;
     }
     if (error) *error = NULL_POINTER;
 }
 
 void string_print(const void* elem, ArrayErrors* error){
     if (elem != NULL){
-
         if(error) *error = ARRAY_OK;
-
         const char* str = (const char*)elem;
         printf("\"%s\"", str );
     } 

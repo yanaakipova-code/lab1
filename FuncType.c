@@ -23,7 +23,7 @@ const char* FUNCTION_NAMES[] = {"inc (+1)", "dec (-1)", "square (x*x)"};
 const int FUNCTION_COUNT = 3;
 
 static void* func_clone(const void* elem, ArrayErrors* error){
-    if (error == NULL){
+    if (elem == NULL){
         if (error)*error = NULL_POINTER;
         return NULL;
     }
