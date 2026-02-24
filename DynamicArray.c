@@ -1,6 +1,7 @@
 #include "DynamicArray.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #define INITIAL_CAPACITY 4
 #define ZERO_SIZE 0
@@ -172,4 +173,43 @@ DinamicArray* map(const DinamicArray* arr,
     if (error) *error = ARRAY_OK;
     return result;
                 }
+}
 
+DinamicArray* where(DinamicArray* arr, 
+                int(*predicate)(const void*, void*, ArrayErrors*),
+                void* context,ArrayErrors* error){
+    if (arr == NULL || predicate == NULL){
+        if(error)*error=NULL_POINTER;
+        return NULL;
+    }
+
+    DinamicArray* result=create_array(arr->type,error);
+    if (*error != ARRAY_OK)return NULL;
+
+    for(unsigned int i=0; i < arr->size; i++){
+        bool condition = predicate(arr->data[i],context,error);
+
+        if(*error != NULL){
+            destroy_array(result, NULL);
+            return NULL;
+        }
+    
+        if(condition){
+            void* temp = arr->type->clone(arr->data[i], error);
+            if(*error != ARRAY_OK){
+                destroy_array(result, NULL);
+                return NULL;
+            }
+            add_to_array(result, temp, error);
+            if(*error != ARRAY_OK){
+                arr->type->free(temp, NULL);
+                destroy_array(result, NULL);
+                return NULL;
+            }
+        }
+
+    }
+
+    if(error)*error = ARRAY_OK;
+    return result;
+}
