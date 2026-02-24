@@ -5,6 +5,7 @@
 
 #define INITIAL_CAPACITY 4
 #define ZERO_SIZE 0
+#define RISING_AT_TWO 2
 
 DinamicArray* create_array(TypeInfo* type, ArrayErrors* error){
     if (type == NULL){
@@ -53,7 +54,7 @@ void increasing_size(DinamicArray* arr, ArrayErrors* error){
          if (error) *error = ARRAY_OK;
         return;
     }
-    unsigned int new_capacity = arr->capacity * 2;
+    unsigned int new_capacity = arr->capacity * RISING_AT_TWO;
     void** new_data = (void**)realloc(arr->data, new_capacity * sizeof(void*));
     if (new_data == NULL) {
         if (error) *error = MEMORY_ALLOCATION_FAILED;
@@ -239,4 +240,52 @@ DinamicArray* reduce(const DinamicArray* arr,
     }
     if (error) *error = ARRAY_OK;
     return temp;
+}
+
+DinamicArray* Concatenation(DinamicArray* arr1, DinamicArray* arr2, 
+                            ArrayErrors* error){
+    if (arr1 == NULL || arr2 == NULL){
+        if(error)*error = NULL_POINTER;
+        return NULL;
+    }
+
+    if(arr1->type != arr2->type){
+        if(error)*error = DIFFERENT_TYPE;
+        return NULL;
+    }
+    DinamicArray* result = create_array(arr1->type, error);
+    if (error != ARRAY_OK)return NULL;
+    
+    for (unsigned int i=0; i < arr1->size; i++){
+        void* temp = arr1->type->clone(arr1->data[i], error);
+        if (*error != ARRAY_OK){
+            destroy_array(result, NULL);
+            return NULL;
+        }
+
+        add_to_array(result, temp, error);
+        if (*error != ARRAY_OK) {
+            arr1->type->free(temp, NULL);
+            destroy_array(result, NULL);
+            return NULL;
+        }
+    }
+
+    for (unsigned int i=0; i < arr2->size; i++){
+        void* temp = arr2->type->clone(arr2->data[i], error);
+        if (*error != ARRAY_OK){
+            destroy_array(result, NULL);
+            return NULL;
+        }
+
+        add_to_array(result, temp, error);
+        if (*error != ARRAY_OK) {
+            arr2->type->free(temp, NULL);
+            destroy_array(result, NULL);
+            return NULL;
+        }
+    }
+
+    if (error) *error = ARRAY_OK;
+    return result;
 }
