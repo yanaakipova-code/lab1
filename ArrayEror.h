@@ -8,4 +8,6 @@ typedef enum{
 
     INDEX_OUT= 303,
 
+    DIFFERENT_TYPE = 404,
+
 } ArrayErrors;
