@@ -36,7 +36,7 @@ void destroy_array(DinamicArray* arr, ArrayErrors* error){
         if (error) *error = NULL_POINTER;
     }
     
-    for (unsigned int i; i < arr->size; i++){
+    for (unsigned int i = 0 ; i < arr->size; i++){
         if (arr->data != NULL){
             arr->type->free(arr->data[i], error);
         }
@@ -120,7 +120,7 @@ void print_array(const DinamicArray* arr, ArrayErrors* error){
     }
     
     printf("[");
-    for (int i = 0; i < arr->size; i++){
+    for (unsigned int i = 0; i < arr->size; i++){
         if (arr->data[i] != NULL){
             arr->type->print(arr->data[i], error);
         }
@@ -145,5 +145,31 @@ void add_to_array(DinamicArray* arr, void* elem, ArrayErrors* error){
     if (error) *error = ARRAY_OK;
 }
 
+DinamicArray* map(const DinamicArray* arr, 
+                void* (*transform)(const void*, void*, ArrayErrors*),
+                void* context,TypeInfo* new_type,ArrayErrors* error){
+    if (arr == NULL || transform == NULL || new_type == NULL){
+        if(error)*error = NULL_POINTER;
+        return NULL;
+    }
 
+    DinamicArray* result = create_array(new_type, error);
+    if (*error != ARRAY_OK) return NULL;
+    for (unsigned int i = 0; i < arr->size; i++){
+        void* new_elem = transform(arr->data[i],context,error);
+
+        if (*error != ARRAY_OK){
+            destroy_array(result, NULL);
+            return NULL;
+        }
+        add_to_array(result, new_elem, error);
+        if(*error != ARRAY_OK){
+            new_type->free(new_elem, NULL);
+            destroy_array(result, NULL);
+            return NULL;
+        
+    }
+    if (error) *error = ARRAY_OK;
+    return result;
+                }
 
