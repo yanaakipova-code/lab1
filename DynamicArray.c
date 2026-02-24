@@ -213,3 +213,30 @@ DinamicArray* where(DinamicArray* arr,
     if(error)*error = ARRAY_OK;
     return result;
 }
+
+DinamicArray* reduce(const DinamicArray* arr, 
+                void* (*binop)(const void*, const void*, void*, ArrayErrors*), 
+                void* context,const void* init,ArrayErrors* error){
+    
+    if(arr == NULL || binop == NULL || init == NULL){
+        if(error)*error = NULL_POINTER;
+        return NULL;
+    }
+
+    void* temp = arr->type->clone(init, error);
+    if (*error != ARRAY_OK) return NULL;
+
+    for (int i = 0; i < arr->size; i++){
+        void* new_temp = binop(temp, arr->data[i], context, error);
+        
+        if (*error != ARRAY_OK) {
+            arr->type->free(temp, NULL);
+            return NULL;
+        }
+        
+        arr->type->free(temp, NULL);
+        temp = new_temp;
+    }
+    if (error) *error = ARRAY_OK;
+    return temp;
+}
