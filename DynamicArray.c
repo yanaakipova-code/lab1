@@ -242,7 +242,7 @@ DinamicArray* reduce(const DinamicArray* arr,
     return temp;
 }
 
-DinamicArray* Concatenation(DinamicArray* arr1, DinamicArray* arr2, 
+DinamicArray* concatenation(DinamicArray* arr1, DinamicArray* arr2, 
                             ArrayErrors* error){
     if (arr1 == NULL || arr2 == NULL){
         if(error)*error = NULL_POINTER;
