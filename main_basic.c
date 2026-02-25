@@ -78,7 +78,7 @@ void create_func_array(){
 
 void add_element() {
     if (!current_array) {
-        printf("Сначала создайте массив\n");
+        puts("Сначала создайте массив");
         return;
     }
     
@@ -91,7 +91,7 @@ void add_element() {
             buffer[strcspn(buffer, "\n")] = '\0';
             
             if (strlen(buffer) == 0) {
-                printf("Строка не может быть пустой\n");
+                puts("Строка не может быть пустой");
                 return;
             }
             
@@ -105,10 +105,10 @@ void add_element() {
         }
         
         case TYPE_FUNC: {
-            puts("Выберите функцию:\n");
-            puts("1. inc (+1)\n");
-            puts("2. dec (-1)\n");
-            puts("3. square (x*x)\n");
+            puts("Выберите функцию:");
+            puts("1. inc (+1)");
+            puts("2. dec (-1)");
+            puts("3. square (x*x)");
             printf("Ваш выбор: ");
             
             unsigned int choice;
@@ -123,7 +123,7 @@ void add_element() {
                 case 2: func = dec; name = "dec"; break;
                 case 3: func = square; name = "square"; break;
                 default:
-                    printf("Неверный выбор\n");
+                    puts("Неверный выбор");
                     return;
             }
             
@@ -137,8 +137,109 @@ void add_element() {
         }
         
         default:
-            puts("Неподдерживаемый тип\n");
+            puts("Неподдерживаемый тип");
     }
 }
 
+void show_array(){
+    if (!current_array){
+        puts("Массив не создан");
+        return;
+    }
+    
+    puts("Текущий массив:");
+    print_array(current_array, &last_error);
+}
+
+
+void* string_to_upper(const void* elem, void* ctx, ArrayErrors* error){
+    (void)ctx;
+    if (!elem){
+        if (error) *error = NULL_POINTER;
+        return NULL;
+    }
+    
+    const char* str = (const char*)elem;
+    char* result = (char*)malloc(strlen(str) + 1);
+    if (!result){
+        if (error) *error = MEMORY_ALLOCATION_FAILED;
+        return NULL;
+    }
+    
+    for (unsigned int i = 0; i <= strlen(str); i++){
+        result[i] = toupper(str[i]);
+    }
+    
+    if (error) *error = ARRAY_OK;
+    return result;
+}
+
+void* string_to_lower(const void* elem, void* ctx, ArrayErrors* error) {
+    (void)ctx;
+    if (!elem) {
+        if (error) *error = NULL_POINTER;
+        return NULL;
+    }
+    
+    const char* str = (const char*)elem;
+    char* result = (char*)malloc(strlen(str) + 1);
+    if (!result) {
+        if (error) *error = MEMORY_ALLOCATION_FAILED;
+        return NULL;
+    }
+    
+    for (unsigned int i = 0; i <= strlen(str); i++) {
+        result[i] = tolower(str[i]);
+    }
+    
+    if (error) *error = ARRAY_OK;
+    return result;
+}
+
+int string_length_4(const void* elem, void* ctx, ArrayErrors* error) {
+    (void)ctx;
+    if (!elem){
+        if (error) *error = NULL_POINTER;
+        return 0;
+    }
+    
+    const char* str = (const char*)elem;
+    if (error) *error = ARRAY_OK;
+    return strlen(str) > 4;
+}
+
+int string_contains_y(const void* elem, void* ctx, ArrayErrors* error) {
+    (void)ctx;
+    if (!elem) {
+        if (error) *error = NULL_POINTER;
+        return 0;
+    }
+    
+    const char* str = (const char*)elem;
+    if (error) *error = ARRAY_OK;
+    return strchr(str, 'y') != NULL || strchr(str, 'Y') != NULL;
+}
+
+void* string_concat_op(const void* a, const void* b, void* ctx, ArrayErrors* error){
+    (void)ctx;
+    if (!a || !b){
+        if (error) *error = NULL_POINTER;
+        return NULL;
+    }
+    
+    const char* s1 = (const char*)a;
+    const char* s2 = (const char*)b;
+    
+    char* result = (char*)malloc(strlen(s1) + strlen(s2) + 1);
+    if (!result){
+        if (error) *error = MEMORY_ALLOCATION_FAILED;
+        return NULL;
+    }
+    
+    strcpy(result, s1);
+    strcat(result, s2);
+    
+    if (error) *error = ARRAY_OK;
+    return result;
+}
 
