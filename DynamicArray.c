@@ -190,7 +190,7 @@ DinamicArray* where(DinamicArray* arr,
     for(unsigned int i=0; i < arr->size; i++){
         bool condition = predicate(arr->data[i],context,error);
 
-        if(*error != NULL){
+        if(*error != ARRAY_OK){
             destroy_array(result, NULL);
             return NULL;
         }
@@ -254,7 +254,7 @@ DinamicArray* concatenation(DinamicArray* arr1, DinamicArray* arr2,
         return NULL;
     }
     DinamicArray* result = create_array(arr1->type, error);
-    if (error != ARRAY_OK)return NULL;
+    if (*error != ARRAY_OK)return NULL;
     
     for (unsigned int i=0; i < arr1->size; i++){
         void* temp = arr1->type->clone(arr1->data[i], error);

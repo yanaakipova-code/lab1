@@ -57,9 +57,57 @@ static void func_print(const void* elem, ArrayErrors* error) {
     if (error) *error = ARRAY_OK;
 }
 
+void* func_apply_to_5(const void* elem, void* context, ArrayErrors* error) {
+    if (elem == NULL) {
+        if (error) *error = NULL_POINTER;
+        return NULL;
+    }
+    
+    IntFunc f = (IntFunc)elem;
+    int* result = malloc(sizeof(int));
+    if (!result) {
+        if (error) *error = MEMORY_ALLOCATION_FAILED;
+        return NULL;
+    }
+    
+    *result = f(5); // Применяем функцию к 5
+    // Здесь нужен TypeInfo для int, но пока сделаем так
+    
+    if (error) *error = ARRAY_OK;
+    return result;
+}
+
+// Предикат для where: отбирает функции, которые возвращают > 10 при x=5
+int func_greater_than_10(const void* elem, void* context, ArrayErrors* error) {
+    if (elem == NULL) {
+        if (error) *error = NULL_POINTER;
+        return 0;
+    }
+    
+    IntFunc f = (IntFunc)elem;
+    int result = f(5);
+    
+    if (error) *error = ARRAY_OK;
+    return result > 10;
+}
+
+// Бинарная операция для reduce: композиция функций
+void* func_compose(const void* a, const void* b, void* context, ArrayErrors* error) {
+    if (!a || !b) {
+        if (error) *error = NULL_POINTER;
+        return NULL;
+    }
+    
+    // Это упрощенная реализация - в реальности нужно создавать новую функцию
+    // Но для демо вернем указатель на b
+    if (error) *error = ARRAY_OK;
+    return (void*)b;
+}
+
 TypeInfo* GetFuncTypeInfo() {
     if (FUNC_TYPE_INFO == NULL) {
         FUNC_TYPE_INFO = (TypeInfo*)malloc(sizeof(TypeInfo));
+        FUNC_TYPE_INFO->kind = TYPE_FUNC;
         FUNC_TYPE_INFO->clone = func_clone;
         FUNC_TYPE_INFO->free = func_free;
         FUNC_TYPE_INFO->print = func_print;

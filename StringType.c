@@ -42,9 +42,32 @@ void string_print(const void* elem, ArrayErrors* error){
     if (error) *error = NULL_POINTER;
 }
 
+char* string_concatenate(const char* s1, const char* s2, ArrayErrors* error) {
+    if (!s1 || !s2) {
+        if (error) *error = NULL_POINTER;
+        return NULL;
+    }
+    
+    size_t len1 = strlen(s1);
+    size_t len2 = strlen(s2);
+    char* result = malloc(len1 + len2 + 1);
+    
+    if (!result) {
+        if (error) *error = MEMORY_ALLOCATION_FAILED;
+        return NULL;
+    }
+    
+    strcpy(result, s1);
+    strcat(result, s2);
+    
+    if (error) *error = ARRAY_OK;
+    return result;
+}
+
 TypeInfo* GetStringTypeInfo(){
     if (STRING_TYPE_INFO == NULL){
         STRING_TYPE_INFO = (TypeInfo*)malloc(sizeof(TypeInfo));
+        STRING_TYPE_INFO->kind = TYPE_STRING;
         STRING_TYPE_INFO->clone = string_clone;
         STRING_TYPE_INFO->free = string_free;
         STRING_TYPE_INFO->print = string_print;
