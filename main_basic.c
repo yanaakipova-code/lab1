@@ -243,3 +243,76 @@ void* string_concat_op(const void* a, const void* b, void* ctx, ArrayErrors* err
     return result;
 }
 
+
+void* func_apply_to_arg_wrapper(const void* elem, void* ctx, ArrayErrors* error){
+    if (!elem || !ctx){
+        if (error) *error = NULL_POINTER;
+        return NULL;
+    }
+    
+    IntFunc f = (IntFunc)elem;
+    int arg = *(int*)ctx;
+    int* result = (int*)malloc(sizeof(int));
+    if (!result){
+        if (error) *error = MEMORY_ALLOCATION_FAILED;
+        return NULL;
+    }
+    
+    *result = f(arg);
+    if (error) *error = ARRAY_OK;
+    return result;
+}
+
+int func_even_wrapper(const void* elem, void* ctx, ArrayErrors* error){
+    (void)ctx;
+    if (!elem){
+        if (error) *error = NULL_POINTER;
+        return 0;
+    }
+    
+    IntFunc f = (IntFunc)elem;
+    if (error) *error = ARRAY_OK;
+    return f(7) % 2 == 0;
+}
+
+void* func_apply_to_5_wrapper(const void* elem, void* ctx, ArrayErrors* error){
+    (void)ctx;
+    if (!elem){
+        if (error) *error = NULL_POINTER;
+        return NULL;
+    }
+    
+    IntFunc f = (IntFunc)elem;
+    int* result = (int*)malloc(sizeof(int));
+    if (!result){
+        if (error) *error = MEMORY_ALLOCATION_FAILED;
+        return NULL;
+    }
+    
+    *result = f(5);
+    if (error) *error = ARRAY_OK;
+    return result;
+}
+
+int func_greater_than_10_wrapper(const void* elem, void* ctx, ArrayErrors* error){
+    (void)ctx;
+    if (!elem){
+        if (error) *error = NULL_POINTER;
+        return 0;
+    }
+    
+    IntFunc f = (IntFunc)elem;
+    if (error) *error = ARRAY_OK;
+    return f(7) > 10;
+}
+
+void* func_compose_op(const void* a, const void* b, void* ctx, ArrayErrors* error){
+    (void)ctx;
+    if (!a || !b){
+        if (error) *error = NULL_POINTER;
+        return NULL;
+    }
+    
+    if (error) *error = ARRAY_OK;
+    return (void*)b;
+}
