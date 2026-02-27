@@ -550,7 +550,7 @@ void do_concatenation(){
         return;
     }
     
-    DinamicArray* result = concatenation(current_array, second_array, &last_error);
+    DinamicArray* result = Concatenation(current_array, second_array, &last_error);
     
     if (result){
         puts("Результат конкатенации:");

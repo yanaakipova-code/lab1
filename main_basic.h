@@ -2,6 +2,7 @@
 #include "DynamicArray.h"
 #include "StringType.h"
 #include "FuncType.h"
+#include "IntType.h" 
 
 void clear_input(void);
 void print_error(const char* context);

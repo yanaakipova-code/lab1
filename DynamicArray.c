@@ -149,31 +149,32 @@ void add_to_array(DinamicArray* arr, void* elem, ArrayErrors* error){
 
 DinamicArray* map(const DinamicArray* arr, 
                 void* (*transform)(const void*, void*, ArrayErrors*),
-                void* context,TypeInfo* new_type,ArrayErrors* error){
-    if (arr == NULL || transform == NULL || new_type == NULL){
-        if(error)*error = NULL_POINTER;
+                void* context, TypeInfo* new_type, ArrayErrors* error) {
+    if (arr == NULL || transform == NULL || new_type == NULL) {
+        if (error) *error = NULL_POINTER;
         return NULL;
     }
 
     DinamicArray* result = create_array(new_type, error);
     if (*error != ARRAY_OK) return NULL;
-    for (unsigned int i = 0; i < arr->size; i++){
-        void* new_elem = transform(arr->data[i],context,error);
-
-        if (*error != ARRAY_OK){
+    
+    for (unsigned int i = 0; i < arr->size; i++) {
+        void* new_elem = transform(arr->data[i], context, error);
+        if (*error != ARRAY_OK) {
             destroy_array(result, NULL);
             return NULL;
         }
+        
         add_to_array(result, new_elem, error);
-        if(*error != ARRAY_OK){
+        if (*error != ARRAY_OK) {
             new_type->free(new_elem, NULL);
             destroy_array(result, NULL);
             return NULL;
-        
+        }
     }
+    
     if (error) *error = ARRAY_OK;
     return result;
-                }
 }
 
 DinamicArray* where(DinamicArray* arr, 
@@ -242,7 +243,7 @@ DinamicArray* reduce(const DinamicArray* arr,
     return temp;
 }
 
-DinamicArray* concatenation(DinamicArray* arr1, DinamicArray* arr2, 
+DinamicArray* Concatenation(DinamicArray* arr1, DinamicArray* arr2, 
                             ArrayErrors* error){
     if (arr1 == NULL || arr2 == NULL){
         if(error)*error = NULL_POINTER;

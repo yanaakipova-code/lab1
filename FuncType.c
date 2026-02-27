@@ -1,10 +1,10 @@
 #include "FuncType.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 static TypeInfo* FUNC_TYPE_INFO = NULL;
 
 typedef int (*IntFunc)(int);
-
-static TypeInfo* FUNC_TYPE_INFO = NULL;
 
 int inc(int x) {
     return x + 1;
@@ -70,14 +70,11 @@ void* func_apply_to_5(const void* elem, void* context, ArrayErrors* error) {
         return NULL;
     }
     
-    *result = f(5); // Применяем функцию к 5
-    // Здесь нужен TypeInfo для int, но пока сделаем так
+    *result = f(5);
     
     if (error) *error = ARRAY_OK;
     return result;
 }
-
-// Предикат для where: отбирает функции, которые возвращают > 10 при x=5
 int func_greater_than_10(const void* elem, void* context, ArrayErrors* error) {
     if (elem == NULL) {
         if (error) *error = NULL_POINTER;
@@ -90,16 +87,12 @@ int func_greater_than_10(const void* elem, void* context, ArrayErrors* error) {
     if (error) *error = ARRAY_OK;
     return result > 10;
 }
-
-// Бинарная операция для reduce: композиция функций
 void* func_compose(const void* a, const void* b, void* context, ArrayErrors* error) {
     if (!a || !b) {
         if (error) *error = NULL_POINTER;
         return NULL;
     }
     
-    // Это упрощенная реализация - в реальности нужно создавать новую функцию
-    // Но для демо вернем указатель на b
     if (error) *error = ARRAY_OK;
     return (void*)b;
 }

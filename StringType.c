@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 static TypeInfo* STRING_TYPE_INFO = NULL;
 
@@ -67,10 +68,12 @@ char* string_concatenate(const char* s1, const char* s2, ArrayErrors* error) {
 TypeInfo* GetStringTypeInfo(){
     if (STRING_TYPE_INFO == NULL){
         STRING_TYPE_INFO = (TypeInfo*)malloc(sizeof(TypeInfo));
-        STRING_TYPE_INFO->kind = TYPE_STRING;
-        STRING_TYPE_INFO->clone = string_clone;
-        STRING_TYPE_INFO->free = string_free;
-        STRING_TYPE_INFO->print = string_print;
+        if (STRING_TYPE_INFO) {
+            STRING_TYPE_INFO->kind = TYPE_STRING;
+            STRING_TYPE_INFO->clone = string_clone;
+            STRING_TYPE_INFO->free = string_free;
+            STRING_TYPE_INFO->print = string_print;
+        }
     }
     return STRING_TYPE_INFO; 
 }
