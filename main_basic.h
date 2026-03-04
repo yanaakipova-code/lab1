@@ -4,21 +4,21 @@
 #include "FuncType.h"
 #include "IntType.h" 
 
-void clear_input(void);
+void clear_input();
 void print_error(const char* context);
-void print_menu(void);
+void print_menu();
 
-void create_string_array(void);
-void create_func_array(void);
+void create_string_array();
+void create_func_array();
 
-void add_element(void);
-void show_array(void);
-void show_info(void);
+void add_element();
+void show_array();
+void show_info();
 
-void do_map(void);
-void do_where(void);
-void do_reduce(void);
-void do_concatenation(void);
+void do_map();
+void do_where();
+void do_reduce();
+void do_concatenation();
 
 void* string_to_upper(const void* elem, void* ctx, ArrayErrors* error);
 void* string_to_lower(const void* elem, void* ctx, ArrayErrors* error);
