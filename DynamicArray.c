@@ -113,23 +113,63 @@ int get_size(const DinamicArray* arr, ArrayErrors* error){
     if (error) *error = ARRAY_OK;
     return arr->size;
 }
-
-
-void print_array(const DinamicArray* arr, ArrayErrors* error){
+char* array_to_string(const DinamicArray* arr, ArrayErrors* error) {
     if (arr == NULL) {
         if (error) *error = NULL_POINTER;
-        return;
+        return NULL;
     }
-    
-    printf("[");
-    for (unsigned int i = 0; i < arr->size; i++){
-        if (arr->data[i] != NULL){
-            arr->type->print(arr->data[i], error);
+    size_t total_size = 2;
+    for (unsigned int i = 0; i < arr->size; i++) {
+        if (arr->data[i] != NULL) {
+            char* elem_str = arr->type->to_string(arr->data[i], error);
+            if (*error != ARRAY_OK) {
+                free(elem_str);
+                return NULL;
+            }
+            
+            total_size += strlen(elem_str);
+            if (i < arr->size - 1) {
+                total_size += 2;
+            }
+            free(elem_str);
         }
     }
-    printf("]");
+    total_size += 1;
+    
+    char* result = (char*)malloc(total_size);
+    if (!result) {
+        if (error) *error = MEMORY_ALLOCATION_FAILED;
+        return NULL;
+    }
+    
+    char* ptr = result;
+    *ptr++ = '[';
+    
+    for (unsigned int i = 0; i < arr->size; i++) {
+        if (arr->data[i] != NULL) {
+            char* elem_str = arr->type->to_string(arr->data[i], error);
+            if (*error != ARRAY_OK) {
+                free(elem_str);
+                free(result);
+                return NULL;
+            }
+            
+            strcpy(ptr, elem_str);
+            ptr += strlen(elem_str);
+            free(elem_str);
+            
+            if (i < arr->size - 1) {
+                strcpy(ptr, ", ");
+                ptr += 2;
+            }
+        }
+    }
+    
+    *ptr++ = ']';
+    *ptr = '\0';
     
     if (error) *error = ARRAY_OK;
+    return result;
 }
 
 void add_to_array(DinamicArray* arr, void* elem, ArrayErrors* error){
@@ -148,8 +188,8 @@ void add_to_array(DinamicArray* arr, void* elem, ArrayErrors* error){
 }
 
 DinamicArray* map(const DinamicArray* arr, 
-                void* (*transform)(const void*, void*, ArrayErrors*),
-                void* context, TypeInfo* new_type, ArrayErrors* error) {
+                void* (*transform)(const void*, ArrayErrors*),
+                TypeInfo* new_type, ArrayErrors* error) {
     if (arr == NULL || transform == NULL || new_type == NULL) {
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -159,7 +199,7 @@ DinamicArray* map(const DinamicArray* arr,
     if (*error != ARRAY_OK) return NULL;
     
     for (unsigned int i = 0; i < arr->size; i++) {
-        void* new_elem = transform(arr->data[i], context, error);
+        void* new_elem = transform(arr->data[i], error);
         if (*error != ARRAY_OK) {
             destroy_array(result, NULL);
             return NULL;
@@ -177,59 +217,58 @@ DinamicArray* map(const DinamicArray* arr,
     return result;
 }
 
-DinamicArray* where(DinamicArray* arr, 
-                int(*predicate)(const void*, void*, ArrayErrors*),
-                void* context,ArrayErrors* error){
-    if (arr == NULL || predicate == NULL){
-        if(error)*error=NULL_POINTER;
+DinamicArray* where(const DinamicArray* arr, 
+                int (*predicate)(const void*, ArrayErrors*),
+                ArrayErrors* error) {
+    if (arr == NULL || predicate == NULL) {
+        if (error) *error = NULL_POINTER;
         return NULL;
     }
 
-    DinamicArray* result=create_array(arr->type,error);
-    if (*error != ARRAY_OK)return NULL;
+    DinamicArray* result = create_array(arr->type, error);
+    if (*error != ARRAY_OK) return NULL;
 
-    for(unsigned int i=0; i < arr->size; i++){
-        bool condition = predicate(arr->data[i],context,error);
+    for (unsigned int i = 0; i < arr->size; i++) {
+        bool condition = predicate(arr->data[i], error);
 
-        if(*error != ARRAY_OK){
+        if (*error != ARRAY_OK) {
             destroy_array(result, NULL);
             return NULL;
         }
     
-        if(condition){
+        if (condition) {
             void* temp = arr->type->clone(arr->data[i], error);
-            if(*error != ARRAY_OK){
+            if (*error != ARRAY_OK) {
                 destroy_array(result, NULL);
                 return NULL;
             }
             add_to_array(result, temp, error);
-            if(*error != ARRAY_OK){
+            if (*error != ARRAY_OK) {
                 arr->type->free(temp, NULL);
                 destroy_array(result, NULL);
                 return NULL;
             }
         }
-
     }
 
-    if(error)*error = ARRAY_OK;
+    if (error) *error = ARRAY_OK;
     return result;
 }
 
-DinamicArray* reduce(const DinamicArray* arr, 
-                void* (*binop)(const void*, const void*, void*, ArrayErrors*), 
-                void* context,const void* init,ArrayErrors* error){
+void* reduce(const DinamicArray* arr, 
+                void* (*binop)(const void*, const void*, ArrayErrors*), 
+                const void* init, ArrayErrors* error) {
     
-    if(arr == NULL || binop == NULL || init == NULL){
-        if(error)*error = NULL_POINTER;
+    if (arr == NULL || binop == NULL || init == NULL) {
+        if (error) *error = NULL_POINTER;
         return NULL;
     }
 
     void* temp = arr->type->clone(init, error);
     if (*error != ARRAY_OK) return NULL;
 
-    for (int i = 0; i < arr->size; i++){
-        void* new_temp = binop(temp, arr->data[i], context, error);
+    for (unsigned int i = 0; i < arr->size; i++) {
+        void* new_temp = binop(temp, arr->data[i], error);
         
         if (*error != ARRAY_OK) {
             arr->type->free(temp, NULL);
@@ -243,7 +282,7 @@ DinamicArray* reduce(const DinamicArray* arr,
     return temp;
 }
 
-DinamicArray* Concatenation(DinamicArray* arr1, DinamicArray* arr2, 
+DinamicArray* concatenation(DinamicArray* arr1, DinamicArray* arr2, 
                             ArrayErrors* error){
     if (arr1 == NULL || arr2 == NULL){
         if(error)*error = NULL_POINTER;

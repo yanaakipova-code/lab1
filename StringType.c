@@ -34,13 +34,22 @@ void string_free(void* elem,ArrayErrors* error){
     if (error) *error = NULL_POINTER;
 }
 
-void string_print(const void* elem, ArrayErrors* error){
-    if (elem != NULL){
-        if(error) *error = ARRAY_OK;
-        const char* str = (const char*)elem;
-        printf("\"%s\"", str );
-    } 
-    if (error) *error = NULL_POINTER;
+char* string_to_string(const void* elem, ArrayErrors* error) {
+    if (elem == NULL) {
+        if (error) *error = NULL_POINTER;
+        return NULL;
+    }
+    
+    const char* str = (const char*)elem;
+    char* result = (char*)malloc(strlen(str) + 3);
+    if (!result) {
+        if (error) *error = MEMORY_ALLOCATION_FAILED;
+        return NULL;
+    }
+    
+    sprintf(result, "\"%s\"", str);
+    if (error) *error = ARRAY_OK;
+    return result;
 }
 
 char* string_concatenate(const char* s1, const char* s2, ArrayErrors* error) {
@@ -72,7 +81,7 @@ TypeInfo* GetStringTypeInfo(){
             STRING_TYPE_INFO->kind = TYPE_STRING;
             STRING_TYPE_INFO->clone = string_clone;
             STRING_TYPE_INFO->free = string_free;
-            STRING_TYPE_INFO->print = string_print;
+            STRING_TYPE_INFO->to_string  = string_to_string;
         }
     }
     return STRING_TYPE_INFO; 

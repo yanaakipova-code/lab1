@@ -8,9 +8,9 @@ int inc(int x);
 int dec(int x);
 int square(int x);
 
-static void* func_clone(const void* elem, ArrayErrors* error);
-static void func_free(void* elem, ArrayErrors* error);
-static void func_print(const void* elem, ArrayErrors* error);
+void* func_clone(const void* elem, ArrayErrors* error);
+void func_free(void* elem, ArrayErrors* error);
+char* func_to_string(const void* elem, ArrayErrors* error);
 
 TypeInfo* GetFuncTypeInfo();
 void FreeFuncTypeInfo();

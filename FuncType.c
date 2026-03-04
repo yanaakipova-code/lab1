@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define FUNCTION_COUNT  3
+
 static TypeInfo* FUNC_TYPE_INFO = NULL;
 
 typedef int (*IntFunc)(int);
@@ -20,8 +22,6 @@ int square(int x) {
 
 const IntFunc AVAILABLE_FUNCTIONS[] = {inc, dec, square};
 const char* FUNCTION_NAMES[] = {"inc (+1)", "dec (-1)", "square (x*x)"};
-const int FUNCTION_COUNT = 3;
-
 static void* func_clone(const void* elem, ArrayErrors* error){
     if (elem == NULL){
         if (error)*error = NULL_POINTER;
@@ -35,26 +35,35 @@ static void func_free(void* elem, ArrayErrors* error) {
     if (error) *error = ARRAY_OK;
 }
 
-static void func_print(const void* elem, ArrayErrors* error) {
+char* func_to_string(const void* elem, ArrayErrors* error) {
     if (elem == NULL) {
         if (error) *error = NULL_POINTER;
-        return;
+        return NULL;
     }
-    IntFunc f = (IntFunc)elem;
-    unsigned int found = 0;
     
+    IntFunc f = (IntFunc)elem;
     for (int i = 0; i < FUNCTION_COUNT; i++) {
         if (AVAILABLE_FUNCTIONS[i] == f) {
-            printf("%s", FUNCTION_NAMES[i]);
-            found = 1;
-            break;
+            char* result = (char*)malloc(strlen(FUNCTION_NAMES[i]) + 1);
+            if (!result) {
+                if (error) *error = MEMORY_ALLOCATION_FAILED;
+                return NULL;
+            }
+            strcpy(result, FUNCTION_NAMES[i]);
+            if (error) *error = ARRAY_OK;
+            return result;
         }
     }
-    if (found == 0) {
-        printf("%p", f);
+    
+    char* result = (char*)malloc(20);
+    if (!result) {
+        if (error) *error = MEMORY_ALLOCATION_FAILED;
+        return NULL;
     }
     
+    sprintf(result, "%p", f);
     if (error) *error = ARRAY_OK;
+    return result;
 }
 
 void* func_apply_to_5(const void* elem, void* context, ArrayErrors* error) {
@@ -103,7 +112,7 @@ TypeInfo* GetFuncTypeInfo() {
         FUNC_TYPE_INFO->kind = TYPE_FUNC;
         FUNC_TYPE_INFO->clone = func_clone;
         FUNC_TYPE_INFO->free = func_free;
-        FUNC_TYPE_INFO->print = func_print;
+        FUNC_TYPE_INFO->to_string  = func_to_string;
     }
     return FUNC_TYPE_INFO;
 }

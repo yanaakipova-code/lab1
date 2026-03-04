@@ -30,13 +30,19 @@ void int_free(void* elem, ArrayErrors* error){
     }
 }
 
-void int_print(const void* elem, ArrayErrors* error){
-    if (!elem){
+char* int_to_string(const void* elem, ArrayErrors* error) {
+    if (!elem) {
         if (error) *error = NULL_POINTER;
-        return;
+        return NULL;
     }
-    printf("%d", *(const int*)elem);
+    char* str = (char*)malloc(12);
+    if (!str) {
+        if (error) *error = MEMORY_ALLOCATION_FAILED;
+        return NULL;
+    }
+    sprintf(str, "%d", *(const int*)elem);
     if (error) *error = ARRAY_OK;
+    return str;
 }
 
 TypeInfo* GetIntTypeInfo(){
@@ -46,7 +52,7 @@ TypeInfo* GetIntTypeInfo(){
             INT_TYPE_INFO->kind = TYPE_INT;
             INT_TYPE_INFO->clone = int_clone;
             INT_TYPE_INFO->free = int_free;
-            INT_TYPE_INFO->print = int_print;
+            INT_TYPE_INFO->to_string  = int_to_string;
         }
     }
     return INT_TYPE_INFO;

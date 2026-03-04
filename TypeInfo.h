@@ -14,5 +14,5 @@ typedef struct {
     TypeKind kind;
     void (*free)(void *, ArrayErrors*);
     void* (*clone)(const void *,  ArrayErrors*);
-    void (*print)(const void*,  ArrayErrors*);
+    char* (*to_string)(const void*, ArrayErrors*);
 } TypeInfo;
