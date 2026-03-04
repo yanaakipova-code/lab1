@@ -20,22 +20,14 @@ void do_where();
 void do_reduce();
 void do_concatenation();
 
-void* string_to_upper(const void* elem, void* ctx, ArrayErrors* error);
-void* string_to_lower(const void* elem, void* ctx, ArrayErrors* error);
+void* string_to_upper(const void* elem, ArrayErrors* error);
+void* string_to_lower(const void* elem, ArrayErrors* error);
+int string_length_4(const void* elem, ArrayErrors* error);
+int string_contains_y(const void* elem, ArrayErrors* error);
+void* string_concat_op(const void* a, const void* b, ArrayErrors* error);
 
-int string_length_4(const void* elem, void* ctx, ArrayErrors* error);
-int string_contains_y(const void* elem, void* ctx, ArrayErrors* error);
-
-void* string_concat_op(const void* a, const void* b, void* ctx, ArrayErrors* error);
-
-
-
-void* func_apply_to_arg_wrapper(const void* elem, void* ctx, ArrayErrors* error);
-void* func_apply_to_8_wrapper(const void* elem, void* ctx, ArrayErrors* error);
-
-int func_even_wrapper(const void* elem, void* ctx, ArrayErrors* error);
-int func_greater_than_10_wrapper(const void* elem, void* ctx, ArrayErrors* error);
-
-
-void* func_compose_op(const void* a, const void* b, void* ctx, ArrayErrors* error);
-
+void* func_apply_to_arg_wrapper(const void* elem, ArrayErrors* error);
+void* func_apply_to_8_wrapper(const void* elem, ArrayErrors* error);
+int func_even_wrapper(const void* elem, ArrayErrors* error);
+int func_greater_than_10_wrapper(const void* elem, ArrayErrors* error);
+void* func_compose_op(const void* a, const void* b, ArrayErrors* error);

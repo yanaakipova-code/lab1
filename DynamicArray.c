@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define INITIAL_CAPACITY 4
 #define ZERO_SIZE 0
@@ -36,6 +37,7 @@ DinamicArray* create_array(TypeInfo* type, ArrayErrors* error){
 void destroy_array(DinamicArray* arr, ArrayErrors* error){
     if (arr == NULL){
         if (error) *error = NULL_POINTER;
+        return;
     }
     
     for (unsigned int i = 0 ; i < arr->size; i++){

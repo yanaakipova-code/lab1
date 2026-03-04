@@ -156,8 +156,7 @@ void show_array(){
     }
 }
 
-void* string_to_upper(const void* elem, void* ctx, ArrayErrors* error){
-    (void)ctx;
+void* string_to_upper(const void* elem, ArrayErrors* error){
     if (!elem){
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -178,8 +177,7 @@ void* string_to_upper(const void* elem, void* ctx, ArrayErrors* error){
     return result;
 }
 
-void* string_to_lower(const void* elem, void* ctx, ArrayErrors* error) {
-    (void)ctx;
+void* string_to_lower(const void* elem, ArrayErrors* error) {
     if (!elem) {
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -200,8 +198,7 @@ void* string_to_lower(const void* elem, void* ctx, ArrayErrors* error) {
     return result;
 }
 
-int string_length_4(const void* elem, void* ctx, ArrayErrors* error) {
-    (void)ctx;
+int string_length_4(const void* elem, ArrayErrors* error) {
     if (!elem){
         if (error) *error = NULL_POINTER;
         return 0;
@@ -212,8 +209,7 @@ int string_length_4(const void* elem, void* ctx, ArrayErrors* error) {
     return strlen(str) > 4;
 }
 
-int string_contains_y(const void* elem, void* ctx, ArrayErrors* error) {
-    (void)ctx;
+int string_contains_y(const void* elem, ArrayErrors* error) {
     if (!elem) {
         if (error) *error = NULL_POINTER;
         return 0;
@@ -224,8 +220,7 @@ int string_contains_y(const void* elem, void* ctx, ArrayErrors* error) {
     return strchr(str, 'y') != NULL || strchr(str, 'Y') != NULL;
 }
 
-void* string_concat_op(const void* a, const void* b, void* ctx, ArrayErrors* error){
-    (void)ctx;
+void* string_concat_op(const void* a, const void* b, ArrayErrors* error){
     if (!a || !b){
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -248,27 +243,25 @@ void* string_concat_op(const void* a, const void* b, void* ctx, ArrayErrors* err
 }
 
 
-void* func_apply_to_arg_wrapper(const void* elem, void* ctx, ArrayErrors* error){
-    if (!elem || !ctx){
+void* func_apply_to_arg_wrapper(const void* elem, ArrayErrors* error){
+    if (!elem){
         if (error) *error = NULL_POINTER;
         return NULL;
     }
     
     IntFunc f = (IntFunc)elem;
-    int arg = *(int*)ctx;
     int* result = (int*)malloc(sizeof(int));
     if (!result){
         if (error) *error = MEMORY_ALLOCATION_FAILED;
         return NULL;
     }
     
-    *result = f(arg);
+    *result = f(current_arg);
     if (error) *error = ARRAY_OK;
     return result;
 }
 
-int func_even_wrapper(const void* elem, void* ctx, ArrayErrors* error){
-    (void)ctx;
+int func_even_wrapper(const void* elem, ArrayErrors* error){
     if (!elem){
         if (error) *error = NULL_POINTER;
         return 0;
@@ -279,8 +272,7 @@ int func_even_wrapper(const void* elem, void* ctx, ArrayErrors* error){
     return f(7) % 2 == 0;
 }
 
-void* func_apply_to_8_wrapper(const void* elem, void* ctx, ArrayErrors* error){
-    (void)ctx;
+void* func_apply_to_8_wrapper(const void* elem, ArrayErrors* error){
     if (!elem){
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -298,8 +290,7 @@ void* func_apply_to_8_wrapper(const void* elem, void* ctx, ArrayErrors* error){
     return result;
 }
 
-int func_greater_than_10_wrapper(const void* elem, void* ctx, ArrayErrors* error){
-    (void)ctx;
+int func_greater_than_10_wrapper(const void* elem, ArrayErrors* error){
     if (!elem){
         if (error) *error = NULL_POINTER;
         return 0;
@@ -310,8 +301,7 @@ int func_greater_than_10_wrapper(const void* elem, void* ctx, ArrayErrors* error
     return f(7) > 10;
 }
 
-void* func_compose_op(const void* a, const void* b, void* ctx, ArrayErrors* error){
-    (void)ctx;
+void* func_compose_op(const void* a, const void* b, ArrayErrors* error){
     if (!a || !b){
         if (error) *error = NULL_POINTER;
         return NULL;

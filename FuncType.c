@@ -1,6 +1,7 @@
 #include "FuncType.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #define FUNCTION_COUNT  3
 
@@ -22,7 +23,7 @@ int square(int x) {
 
 const IntFunc AVAILABLE_FUNCTIONS[] = {inc, dec, square};
 const char* FUNCTION_NAMES[] = {"inc (+1)", "dec (-1)", "square (x*x)"};
-static void* func_clone(const void* elem, ArrayErrors* error){
+void* func_clone(const void* elem, ArrayErrors* error){
     if (elem == NULL){
         if (error)*error = NULL_POINTER;
         return NULL;
@@ -31,7 +32,7 @@ static void* func_clone(const void* elem, ArrayErrors* error){
     return (void*)elem;
 }
 
-static void func_free(void* elem, ArrayErrors* error) {
+void func_free(void* elem, ArrayErrors* error) {
     if (error) *error = ARRAY_OK;
 }
 
