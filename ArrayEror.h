@@ -8,6 +8,8 @@ typedef enum{
 
     INDEX_OUT= 303,
 
-    DIFFERENT_TYPE = 404,
+    DIFFERENT_TYPE = 505,
+
+    ACTION_UNDEFINED = 606,
 
 } ArrayErrors;

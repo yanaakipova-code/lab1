@@ -74,23 +74,14 @@ char* string_concatenate(const char* s1, const char* s2, ArrayErrors* error) {
     return result;
 }
 
-TypeInfo* GetStringTypeInfo(){
-    if (STRING_TYPE_INFO == NULL){
+TypeInfo* GetStringTypeInfo() {
+    if (STRING_TYPE_INFO == NULL) {
         STRING_TYPE_INFO = (TypeInfo*)malloc(sizeof(TypeInfo));
         if (STRING_TYPE_INFO) {
-            STRING_TYPE_INFO->kind = TYPE_STRING;
             STRING_TYPE_INFO->clone = string_clone;
             STRING_TYPE_INFO->free = string_free;
-            STRING_TYPE_INFO->to_string  = string_to_string;
+            STRING_TYPE_INFO->to_string = string_to_string;
         }
     }
-    return STRING_TYPE_INFO; 
+    return STRING_TYPE_INFO;
 }
-
-void FreeStringTypeInfo(){
-    if (STRING_TYPE_INFO != NULL){  
-        free(STRING_TYPE_INFO);
-        STRING_TYPE_INFO = NULL;
-    }
-}
-

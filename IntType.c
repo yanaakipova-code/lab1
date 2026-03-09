@@ -49,18 +49,10 @@ TypeInfo* GetIntTypeInfo(){
     if (!INT_TYPE_INFO){
         INT_TYPE_INFO = (TypeInfo*)malloc(sizeof(TypeInfo));
         if (INT_TYPE_INFO) {
-            INT_TYPE_INFO->kind = TYPE_INT;
             INT_TYPE_INFO->clone = int_clone;
             INT_TYPE_INFO->free = int_free;
             INT_TYPE_INFO->to_string  = int_to_string;
         }
     }
     return INT_TYPE_INFO;
-}
-
-void FreeIntTypeInfo(){
-    if (INT_TYPE_INFO){
-        free(INT_TYPE_INFO);
-        INT_TYPE_INFO = NULL;
-    }
 }

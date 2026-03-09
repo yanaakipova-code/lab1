@@ -3,10 +3,11 @@
 #include "StringType.h"
 #include "ArrayEror.h"
 #include "TypeInfo.h"
+#include "IntType.h"
 
 typedef struct DinamicArray{
     TypeInfo* type;
-    void** data;
+    void* data;
     unsigned int size;
     unsigned  int capacity;
 }DinamicArray;

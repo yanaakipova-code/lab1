@@ -32,7 +32,7 @@ void print_test_result(const char* test_name, int passed) {
 
 void print_test_summary() {
     puts("-------------------------------------------------");
-    printf("Всего тестов: %d\n", total_tests);
+    printf("Bceго тестов: %d\n", total_tests);
     printf(COLOR_GREEN "Успешно: %d\n" COLOR_RESET, passed_tests);
     printf(COLOR_RED "Провалено: %d\n" COLOR_RESET, failed_tests);
     puts("-------------------------------------------------");
@@ -769,7 +769,7 @@ int main() {
     #endif
     
     puts("--------------------------------------------");
-    puts("        ТЕСТИРОВАНИЕ DYNAMIC ARRAY");
+    puts("ТЕСТИРОВАНИЕ DYNAMIC ARRAY");
     puts("--------------------------------------------");
     
     test_create_array();
