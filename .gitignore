@@ -1,6 +1,1 @@
-"# Object files" 
 "*.o" 
-"*.exe" 
-"# Исполняемые файлы" 
-"program.exe" 
-"test.exe" 
