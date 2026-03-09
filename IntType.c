@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static TypeInfo* INT_TYPE_INFO = NULL;
+static TypeInfo* int_type_info = NULL;
 
 void* int_clone(const void* elem, ArrayErrors* error){
     if (!elem){
@@ -45,14 +45,19 @@ char* int_to_string(const void* elem, ArrayErrors* error) {
     return str;
 }
 
-TypeInfo* GetIntTypeInfo(){
-    if (!INT_TYPE_INFO){
-        INT_TYPE_INFO = (TypeInfo*)malloc(sizeof(TypeInfo));
-        if (INT_TYPE_INFO) {
-            INT_TYPE_INFO->clone = int_clone;
-            INT_TYPE_INFO->free = int_free;
-            INT_TYPE_INFO->to_string  = int_to_string;
+static size_t get_element_size() {
+  return sizeof(int);
+}
+
+TypeInfo* get_int_type_info(){
+    if (!int_type_info){
+        int_type_info = (TypeInfo*)malloc(sizeof(TypeInfo));
+        if (int_type_info) {
+            int_type_info->elem_size = get_element_size;
+            int_type_info->clone = int_clone;
+            int_type_info->free = int_free;
+            int_type_info->to_string  = int_to_string;
         }
     }
-    return INT_TYPE_INFO;
+    return int_type_info;
 }

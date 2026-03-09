@@ -5,7 +5,7 @@
 
 #define FUNCTION_COUNT  3
 
-static TypeInfo* FUNC_TYPE_INFO = NULL;
+static TypeInfo* func_type_info = NULL;
 
 typedef int (*IntFunc)(int);
 
@@ -40,12 +40,17 @@ static char* func_to_string(const void* elem, ArrayErrors* error) {
     return result;
 }
 
-TypeInfo* GetFuncTypeInfo() {
-    if (FUNC_TYPE_INFO == NULL) {
-        FUNC_TYPE_INFO = (TypeInfo*)malloc(sizeof(TypeInfo));
-        FUNC_TYPE_INFO->clone = func_clone;
-        FUNC_TYPE_INFO->free = func_free;
-        FUNC_TYPE_INFO->to_string  = func_to_string;
+static size_t get_element_size() {
+  return sizeof(int);
+}
+
+TypeInfo* get_func_type_info() {
+    if (func_type_info == NULL) {
+        func_type_info = (TypeInfo*)malloc(sizeof(TypeInfo));
+        func_type_info->elem_size = get_element_size;
+        func_type_info->clone = func_clone;
+        func_type_info->free = func_free;
+        func_type_info->to_string  = func_to_string;
     }
-    return FUNC_TYPE_INFO;
+    return func_type_info;
 }

@@ -8,15 +8,9 @@
 #define ZERO_SIZE 0
 #define RISING_AT_TWO 2
 
-static size_t get_element_size(TypeInfo* type){
-    if (type->clone == string_clone) return sizeof(char*); 
-    if (type->clone == int_clone) return sizeof(int);
-    if (type->clone == func_clone) return sizeof(void*);
-    return sizeof(void*);
-}
 
 static void* element_ptr(DinamicArray* arr, int index){
-    size_t elem_size = get_element_size(arr->type);
+    size_t elem_size = arr->type->elem_size();
     return (char*)arr->data + (index * elem_size);
 }
 
@@ -31,9 +25,8 @@ DinamicArray* create_array(TypeInfo* type, ArrayErrors* error){
         if (error) *error = NULL_POINTER;
         return NULL;
     }
-    size_t elem_size = get_element_size(type);
-
-    arr->data=(void**)malloc(INITIAL_CAPACITY * sizeof(void*));
+    size_t elem_size = type->elem_size();
+    arr->data = malloc(INITIAL_CAPACITY * elem_size);
     if (arr->data == NULL){
         free(arr);
         if (error) *error = NULL_POINTER;
@@ -52,7 +45,7 @@ void destroy_array(DinamicArray* arr, ArrayErrors* error){
         if (error) *error = NULL_POINTER;
         return;
     }
-    size_t elem_size = get_element_size(arr->type);
+    size_t elem_size = arr->type->elem_size(); 
     char* ptr = (char*)arr->data;
 
     for (unsigned int i = 0 ; i < arr->size; i++){
@@ -78,10 +71,9 @@ void increasing_size(DinamicArray* arr, ArrayErrors* error){
          if (error) *error = ARRAY_OK;
         return;
     }
-     size_t elem_size = get_element_size(arr->type);
+    size_t elem_size = arr->type->elem_size(); 
     unsigned int new_capacity = arr->capacity * RISING_AT_TWO;
     void* new_data = realloc(arr->data, new_capacity * elem_size);
-    void** new_data = (void**)realloc(arr->data, new_capacity * sizeof(void*));
     if (new_data == NULL) {
         if (error) *error = MEMORY_ALLOCATION_FAILED;
         return;
@@ -102,7 +94,7 @@ void append(DinamicArray* arr, const void* elem, ArrayErrors* error) {
     increasing_size(arr, error);
     if (*error != ARRAY_OK) return;
 
-    size_t elem_size = get_element_size(arr->type);
+    size_t elem_size = arr->type->elem_size(); 
     void* dest = element_ptr(arr, arr->size);
     
     if (elem_size == sizeof(char*) || elem_size == sizeof(void*)) {
@@ -129,7 +121,7 @@ void* get(const DinamicArray* arr, int index, ArrayErrors* error) {
         return NULL;
     }
     
-    size_t elem_size = get_element_size(arr->type);
+    size_t elem_size = arr->type->elem_size(); 
     void* elem_ptr = element_ptr((DinamicArray*)arr, index);
     
     if (error) *error = ARRAY_OK;
@@ -154,7 +146,7 @@ char* array_to_string(const DinamicArray* arr, ArrayErrors* error) {
         return NULL;
     }
     size_t total_size = 2;
-    size_t elem_size = get_element_size(arr->type);
+    size_t elem_size = arr->type->elem_size(); 
     
     for (unsigned int i = 0; i < arr->size; i++) {
         void* elem_ptr = element_ptr((DinamicArray*)arr, i);
@@ -233,13 +225,14 @@ void add_to_array(DinamicArray* arr, void* elem, ArrayErrors* error) {
     increasing_size(arr, error);
     if (*error != ARRAY_OK) return;
     
-    size_t elem_size = get_element_size(arr->type);
+    size_t elem_size = arr->type->elem_size(); 
     void* dest = element_ptr(arr, arr->size);
     
     if (elem_size == sizeof(char*) || elem_size == sizeof(void*)) {
         *(void**)dest = elem;
     } else {
         memcpy(dest, elem, elem_size);
+        free(elem);
     }
     
     arr->size++;
@@ -257,9 +250,9 @@ DinamicArray* map(const DinamicArray* arr,
     DinamicArray* result = create_array(new_type, error);
     if (*error != ARRAY_OK) return NULL;
 
-    size_t old_elem_size = get_element_size(arr->type);
-    size_t new_elem_size = get_element_size(new_type);
-    
+    size_t old_elem_size = arr->type->elem_size(); 
+    size_t new_elem_size = new_type->elem_size();  
+
     for (unsigned int i = 0; i < arr->size; i++) {
         void* old_elem_ptr = element_ptr((DinamicArray*)arr, i);
         void* old_elem;
@@ -297,7 +290,6 @@ DinamicArray* map(const DinamicArray* arr,
     return result; 
 }
 
-
 DinamicArray* where(const DinamicArray* arr, 
                 int (*predicate)(const void*, ArrayErrors*),
                 ArrayErrors* error) {
@@ -309,7 +301,7 @@ DinamicArray* where(const DinamicArray* arr,
     DinamicArray* result = create_array(arr->type, error);
     if (*error != ARRAY_OK) return NULL;
 
-    size_t elem_size = get_element_size(arr->type);
+    size_t elem_size = arr->type->elem_size(); 
 
     for (unsigned int i = 0; i < arr->size; i++) {
         void* elem_ptr = (char*)arr->data + (i * elem_size);
@@ -364,7 +356,7 @@ void* reduce(const DinamicArray* arr,
         return NULL;
     }
 
-    size_t elem_size = get_element_size(arr->type);
+    size_t elem_size =arr->type->elem_size(); 
     
     void* temp = arr->type->clone(init, error);
     if (*error != ARRAY_OK) return NULL;
@@ -411,7 +403,7 @@ DinamicArray* concatenation(DinamicArray* arr1, DinamicArray* arr2,
     DinamicArray* result = create_array(arr1->type, error);
     if (*error != ARRAY_OK) return NULL;
     
-    size_t elem_size = get_element_size(arr1->type);
+    size_t elem_size = arr1->type->elem_size();  
     
     for (unsigned int i = 0; i < arr1->size; i++) {
         increasing_size(result, error);

@@ -4,7 +4,11 @@
 #include <string.h>
 #include <stdio.h>
 
-static TypeInfo* STRING_TYPE_INFO = NULL;
+static TypeInfo* string_type_info = NULL;
+
+static size_t get_element_size() {
+  return sizeof(char*);
+}
 
 void* string_clone(const void* elem, ArrayErrors* error){
 
@@ -74,14 +78,15 @@ char* string_concatenate(const char* s1, const char* s2, ArrayErrors* error) {
     return result;
 }
 
-TypeInfo* GetStringTypeInfo() {
-    if (STRING_TYPE_INFO == NULL) {
-        STRING_TYPE_INFO = (TypeInfo*)malloc(sizeof(TypeInfo));
-        if (STRING_TYPE_INFO) {
-            STRING_TYPE_INFO->clone = string_clone;
-            STRING_TYPE_INFO->free = string_free;
-            STRING_TYPE_INFO->to_string = string_to_string;
+TypeInfo* get_string_type_info() {
+    if (string_type_info == NULL) {
+        string_type_info = (TypeInfo*)malloc(sizeof(TypeInfo));
+        if (string_type_info) {
+            string_type_info->elem_size=get_element_size;
+            string_type_info->clone = string_clone;
+            string_type_info->free = string_free;
+            string_type_info->to_string = string_to_string;
         }
     }
-    return STRING_TYPE_INFO;
+    return string_type_info;
 }

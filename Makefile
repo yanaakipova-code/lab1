@@ -1,8 +1,10 @@
-TARGET = program
-.PHONY: all clean
+TARGET = program.exe
+.PHONY: all clean test run-tests
+
 all: $(TARGET)
+
 clean:
-	rm -rf $(TARGET) *.o
+	-del /f /q $(TARGET) *.o 2>nul || del $(TARGET) *.o
 
 main.o: main.c main_basic.h DynamicArray.h StringType.h FuncType.h IntType.h TypeInfo.h ArrayEror.h
 	gcc -c -o main.o main.c
@@ -29,7 +31,7 @@ $(TARGET): main.o main_basic.o DynamicArray.o StringType.o FuncType.o IntType.o
 	gcc -o $(TARGET) main.o main_basic.o DynamicArray.o StringType.o FuncType.o IntType.o
 
 test: test.o main_basic.o DynamicArray.o StringType.o FuncType.o IntType.o
-	gcc -o test test.o main_basic.o DynamicArray.o StringType.o FuncType.o IntType.o
+	gcc -o test.exe test.o main_basic.o DynamicArray.o StringType.o FuncType.o IntType.o
 
 run-tests: test
-	./test
+	test
