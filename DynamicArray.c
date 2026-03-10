@@ -247,16 +247,27 @@ DinamicArray* map(const DinamicArray* arr,
         if (error) *error = NULL_POINTER;
         return NULL;
     }
+
+    size_t src_elem_size = arr->type->elem_size();
+    size_t dst_elem_size = new_type->elem_size();
     DinamicArray* result = create_array(new_type, error);
     if (*error != ARRAY_OK) return NULL;
 
-    size_t src_elem_size = arr->type->elem_size(); 
-    size_t dst_elem_size = new_type->elem_size();
-
-    char temp_buffer[256];
+    if (result->capacity < arr->size) {
+        size_t new_capacity = arr->size;
+        size_t new_size = new_capacity * dst_elem_size;
+        void* new_data = realloc(result->data, new_size);
+        if (new_data == NULL) {
+            destroy_array(result, NULL);
+            if (error) *error = MEMORY_ALLOCATION_FAILED;
+            return NULL;
+        }
+        result->data = new_data;
+        result->capacity = new_capacity;
+    }
 
     for (unsigned int i = 0; i < arr->size; i++) {
-        void* src_ptr = element_ptr((DinamicArray*)arr, i);
+        void* src_ptr = (char*)arr->data + (i * src_elem_size);
         void* src_elem;
         
         if (src_elem_size == sizeof(char*) || src_elem_size == sizeof(void*)) {
@@ -264,31 +275,20 @@ DinamicArray* map(const DinamicArray* arr,
         } else {
             src_elem = src_ptr;
         }
-        transform(src_elem, temp_buffer, error);
+        void* dest_ptr = (char*)result->data + (i * dst_elem_size);
+        transform(src_elem, dest_ptr, error);
 
         if (*error != ARRAY_OK) {
             destroy_array(result, NULL);
             return NULL;
         }
-
-        increasing_size(result, error);
-        if (*error != ARRAY_OK) {
-            destroy_array(result, NULL);
-            return NULL;
-        }
-        void* dest_ptr = (char*)result->data + (result->size * dst_elem_size);
         
-        if (dst_elem_size == sizeof(char*) || dst_elem_size == sizeof(void*)) {
-             void* ptr_to_save = *(void**)temp_buffer;
-             *(void**)dest_ptr = ptr_to_save;
-        } else {
-            memcpy(dest_ptr, temp_buffer, dst_elem_size);
-        }
         result->size++;
     }
+    
     if (error) *error = ARRAY_OK;
     return result;
-}  
+}
 
 DinamicArray* where(const DinamicArray* arr, 
                 int (*predicate)(const void*, ArrayErrors*),
