@@ -5,7 +5,7 @@
 #include <stdlib.h> 
 
 DinamicArray* current_array = NULL;
-ArrayErrors last_error;
+AllErrors last_error;
 int current_arg = 0;
 
 void clear_input(){
@@ -159,7 +159,7 @@ void show_array(){
     }
 }
 
-void string_to_upper(const void* src, void* dst, ArrayErrors* error){
+void string_to_upper(const void* src, void* dst, AllErrors* error){
     const char* str = (const char*)src;
     if (!str){
         if (error) *error = NULL_POINTER;
@@ -178,7 +178,7 @@ void string_to_upper(const void* src, void* dst, ArrayErrors* error){
     if (error) *error = ARRAY_OK;;
 }
 
-void string_to_lower(const void* src, void* dst, ArrayErrors* error) {
+void string_to_lower(const void* src, void* dst, AllErrors* error) {
     const char* str = (const char*)src;
     if (!str) {
         if (error) *error = NULL_POINTER;
@@ -197,7 +197,7 @@ void string_to_lower(const void* src, void* dst, ArrayErrors* error) {
     if (error) *error = ARRAY_OK;
 }
 
-int string_length_4(const char* elem, ArrayErrors* error) {
+int string_length_4(const void * elem, AllErrors* error) {
     if (!elem){
         if (error) *error = NULL_POINTER;
         return 0;
@@ -205,10 +205,13 @@ int string_length_4(const char* elem, ArrayErrors* error) {
     
     const char* str = (const char*)elem;
     if (error) *error = ARRAY_OK;
-    return strlen(str) > 4;
+    
+    if(strlen(str) > 4){
+        return 1;
+    }else return 0;
 }
 
-int string_contains_y(const char* elem, ArrayErrors* error) {
+int string_contains_y(const void* elem, AllErrors* error) {
     if (!elem) {
         if (error) *error = NULL_POINTER;
         return 0;
@@ -216,10 +219,12 @@ int string_contains_y(const char* elem, ArrayErrors* error) {
     
     const char* str = (const char*)elem;
     if (error) *error = ARRAY_OK;
-    return strchr(str, 'y') != NULL || strchr(str, 'Y') != NULL;
+    if (strchr(str, 'y') != NULL || strchr(str, 'Y') != NULL){
+        return 1;
+    }else return 0;
 }
 
-char* string_concat_op(const char* a, const char* b, ArrayErrors* error){
+void* string_concat_op(const void* a, const void* b, AllErrors* error){
     if (!a || !b){
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -242,7 +247,7 @@ char* string_concat_op(const char* a, const char* b, ArrayErrors* error){
 }
 
 
-void func_apply_to_arg(const void* src, void* dst, ArrayErrors* error) {
+void func_apply_to_arg(const void* src, void* dst, AllErrors* error) {
      IntFunc f = (IntFunc)src;
     if (!f) {
         if (error) *error = NULL_POINTER;
@@ -256,7 +261,7 @@ void func_apply_to_arg(const void* src, void* dst, ArrayErrors* error) {
     if(error)*error = NULL_POINTER;
 }
 
-void func_apply_to_8(const void* src, void* dst, ArrayErrors* error) {
+void func_apply_to_8(const void* src, void* dst, AllErrors* error) {
     IntFunc f = (IntFunc)src;
     if (!f){
         if(!error)*error = NULL_POINTER;
@@ -265,31 +270,37 @@ void func_apply_to_8(const void* src, void* dst, ArrayErrors* error) {
     int result = f(8);
 }
 
-int func_even(IntFunc f, ArrayErrors* error) {
-    if (!f) {
+int func_even(const void * elem, AllErrors* error) {
+    if (!elem) {
         if (error) *error = NULL_POINTER;
         return 0;
     }
+    IntFunc f = (IntFunc)elem;
     if (error) *error = ARRAY_OK;
-    return f(7) % 2 == 0;
+    if (f(7) % 2 == 0){
+        return 1;
+    }else return 0;
 }
 
-int func_greater_than_10(IntFunc f, ArrayErrors* error) {
-    if (!f) {
+int func_greater_than_10(const void * elem, AllErrors* error) {
+    if (!elem) {
         if (error) *error = NULL_POINTER;
         return 0;
     }
+    IntFunc f = (IntFunc)elem;
     if (error) *error = ARRAY_OK;
-    return f(7) > 10;
+    if(f(7) > 10){
+        return 1;
+    }else return 0;
 }
 
-IntFunc func_compose(IntFunc f, IntFunc g, ArrayErrors* error) {
-    if (!f || !g) {
+void * func_compose( const void * a, const void * b, AllErrors* error) {
+    if (!a || !b) {
         if (error) *error = NULL_POINTER;
         return NULL;
     }
     if (error) *error = ARRAY_OK;
-    return g;
+    return (void*)b;
 }
 
 void do_map() {
@@ -308,7 +319,7 @@ void do_map() {
         scanf("%u", &choice);
         clear_input();
 
-        void (*transform)(const void*, void*, ArrayErrors*) = NULL;
+        void (*transform)(const void*, void*, AllErrors*) = NULL;
         
         switch (choice) {
             case 1: transform = string_to_upper; break;
@@ -340,7 +351,7 @@ void do_map() {
         scanf("%u", &choice);
         clear_input();
         
-        void (*transform)(const void*, void*, ArrayErrors*) = NULL;
+        void (*transform)(const void*, void*, AllErrors*) = NULL;
         
         if (choice == 1) {
             transform = func_apply_to_8;
@@ -389,7 +400,7 @@ void do_where() {
         scanf("%u", &choice);
         clear_input();
         
-        int (*predicate)(const void*, ArrayErrors*) = NULL;
+        int (*predicate)(const void*, AllErrors*) = NULL;
         
         switch (choice) {
             case 1: predicate = string_length_4; break;
@@ -424,7 +435,7 @@ void do_where() {
         scanf("%u", &choice);
         clear_input();
         
-        int (*predicate)(const void*, ArrayErrors*) = NULL;
+        int (*predicate)(const void*, AllErrors*) = NULL;
         
         switch (choice) {
             case 1: predicate = func_greater_than_10; break;

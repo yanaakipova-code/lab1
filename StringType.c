@@ -10,7 +10,7 @@ static size_t get_element_size() {
   return sizeof(char*);
 }
 
-void* string_clone(const void* elem, ArrayErrors* error){
+void* string_clone(const void* elem, AllErrors* error){
 
     if (elem == NULL) {
         if (error) *error = NULL_POINTER;
@@ -29,7 +29,7 @@ void* string_clone(const void* elem, ArrayErrors* error){
         }
 }
 
-void string_free(void* elem,ArrayErrors* error){
+void string_free(void* elem,AllErrors* error){
     if (elem != NULL) {
         free(elem);
         if(error) *error = ARRAY_OK;
@@ -38,7 +38,7 @@ void string_free(void* elem,ArrayErrors* error){
     if (error) *error = NULL_POINTER;
 }
 
-char* string_to_string(const void* elem, ArrayErrors* error) {
+char* string_to_string(const void* elem, AllErrors* error) {
     if (elem == NULL) {
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -56,7 +56,7 @@ char* string_to_string(const void* elem, ArrayErrors* error) {
     return result;
 }
 
-char* string_concatenate(const char* s1, const char* s2, ArrayErrors* error) {
+char* string_concatenate(const char* s1, const char* s2, AllErrors* error) {
     if (!s1 || !s2) {
         if (error) *error = NULL_POINTER;
         return NULL;

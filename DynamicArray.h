@@ -12,23 +12,23 @@ typedef struct DinamicArray{
     unsigned  int capacity;
 }DinamicArray;
 
-DinamicArray* create_array(TypeInfo* type, ArrayErrors* error);
-void destroy_array(DinamicArray* arr, ArrayErrors* error);
-void increasing_size(DinamicArray* arr, ArrayErrors* error);
-void append(DinamicArray* arr, const void* elem, ArrayErrors* error);
-void* get(const DinamicArray* arr, int index, ArrayErrors* error);
-int get_size(const DinamicArray* arr, ArrayErrors* error);
-char* array_to_string(const DinamicArray* arr, ArrayErrors* error);
-void add_to_array(DinamicArray* arr, void* elem, ArrayErrors* error);
+DinamicArray* create_array(TypeInfo* type, AllErrors* error);
+void destroy_array(DinamicArray* arr, AllErrors* error);
+void increasing_size(DinamicArray* arr, AllErrors* error);
+void append(DinamicArray* arr, const void* elem, AllErrors* error);
+void* get(const DinamicArray* arr, int index, AllErrors* error);
+int get_size(const DinamicArray* arr, AllErrors* error);
+char* array_to_string(const DinamicArray* arr, AllErrors* error);
+void add_to_array(DinamicArray* arr, void* elem, AllErrors* error);
 
 DinamicArray* map(const DinamicArray* arr, 
-                void (*transform)(const void* src, void* dst, ArrayErrors*),
-                TypeInfo* new_type, ArrayErrors* error) ;
+                void (*transform)(const void* src, void* dst, AllErrors*),
+                TypeInfo* new_type, AllErrors* error) ;
 DinamicArray* where(const DinamicArray* arr, 
-                int (*predicate)(const void*, ArrayErrors*),
-                ArrayErrors* error);
+                int (*predicate)(const void*, AllErrors*),
+                AllErrors* error);
 void* reduce(const DinamicArray* arr, 
-                void* (*binop)(const void*, const void*, ArrayErrors*), 
-                const void* init, ArrayErrors* error);
+                void* (*binop)(const void*, const void*, AllErrors*), 
+                const void* init, AllErrors* error);
 DinamicArray* concatenation(DinamicArray* arr1, DinamicArray* arr2, 
-                            ArrayErrors* error);
+                            AllErrors* error);

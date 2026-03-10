@@ -12,4 +12,4 @@ typedef enum{
 
     ACTION_UNDEFINED = 606,
 
-} ArrayErrors;
+} AllErrors;

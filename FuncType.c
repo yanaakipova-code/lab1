@@ -9,7 +9,7 @@ static TypeInfo* func_type_info = NULL;
 
 typedef int (*IntFunc)(int);
 
-void* func_clone(const void* elem, ArrayErrors* error){
+void* func_clone(const void* elem, AllErrors* error){
     if (elem == NULL){
         if (error)*error = NULL_POINTER;
         return NULL;
@@ -18,11 +18,11 @@ void* func_clone(const void* elem, ArrayErrors* error){
     return (void*)elem;
 }
 
-void func_free(void* elem, ArrayErrors* error) {
+void func_free(void* elem, AllErrors* error) {
     if (error) *error = ACTION_UNDEFINED;
 }
 
-char* func_to_string(const void* elem, ArrayErrors* error) {
+char* func_to_string(const void* elem, AllErrors* error) {
     if (elem == NULL) {
         if (error) *error = NULL_POINTER;
         return NULL;

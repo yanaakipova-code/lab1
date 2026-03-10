@@ -14,7 +14,7 @@ static void* element_ptr(DinamicArray* arr, int index){
     return (char*)arr->data + (index * elem_size);
 }
 
-DinamicArray* create_array(TypeInfo* type, ArrayErrors* error){
+DinamicArray* create_array(TypeInfo* type, AllErrors* error){
     if (type == NULL){
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -40,7 +40,7 @@ DinamicArray* create_array(TypeInfo* type, ArrayErrors* error){
     return arr;
 }
 
-void destroy_array(DinamicArray* arr, ArrayErrors* error){
+void destroy_array(DinamicArray* arr, AllErrors* error){
     if (arr == NULL){
         if (error) *error = NULL_POINTER;
         return;
@@ -66,7 +66,7 @@ void destroy_array(DinamicArray* arr, ArrayErrors* error){
     if (error)*error = ARRAY_OK;
 }
 
-void increasing_size(DinamicArray* arr, ArrayErrors* error){
+void increasing_size(DinamicArray* arr, AllErrors* error){
     if (arr->size<arr->capacity){
          if (error) *error = ARRAY_OK;
         return;
@@ -85,7 +85,7 @@ void increasing_size(DinamicArray* arr, ArrayErrors* error){
 
 }
 
-void append(DinamicArray* arr, const void* elem, ArrayErrors* error) {
+void append(DinamicArray* arr, const void* elem, AllErrors* error) {
     if (elem == NULL || arr == NULL) {
         if (error) *error = NULL_POINTER;
         return;
@@ -110,7 +110,7 @@ void append(DinamicArray* arr, const void* elem, ArrayErrors* error) {
     if (error) *error = ARRAY_OK;
 }
 
-void* get(const DinamicArray* arr, int index, ArrayErrors* error) {
+void* get(const DinamicArray* arr, int index, AllErrors* error) {
     if (arr == NULL) {
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -131,7 +131,7 @@ void* get(const DinamicArray* arr, int index, ArrayErrors* error) {
         return elem_ptr;
     }
 }
-int get_size(const DinamicArray* arr, ArrayErrors* error){
+int get_size(const DinamicArray* arr, AllErrors* error){
     if (arr == NULL){
         if (error) *error = NULL_POINTER;
         return -1;
@@ -140,7 +140,7 @@ int get_size(const DinamicArray* arr, ArrayErrors* error){
     if (error) *error = ARRAY_OK;
     return arr->size;
 }
-char* array_to_string(const DinamicArray* arr, ArrayErrors* error) {
+char* array_to_string(const DinamicArray* arr, AllErrors* error) {
     if (arr == NULL) {
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -216,7 +216,7 @@ char* array_to_string(const DinamicArray* arr, ArrayErrors* error) {
     return result;
 }
 
-void add_to_array(DinamicArray* arr, void* elem, ArrayErrors* error) {
+void add_to_array(DinamicArray* arr, void* elem, AllErrors* error) {
     if (arr == NULL || elem == NULL) {
         if (error) *error = NULL_POINTER;
         return;
@@ -241,8 +241,8 @@ void add_to_array(DinamicArray* arr, void* elem, ArrayErrors* error) {
 }
 
 DinamicArray* map(const DinamicArray* arr, 
-                void (*transform)(const void* src, void* dst, ArrayErrors*),
-                TypeInfo* new_type, ArrayErrors* error) {
+                void (*transform)(const void* src, void* dst, AllErrors*),
+                TypeInfo* new_type, AllErrors* error) {
     if (arr == NULL || transform == NULL || new_type == NULL) {
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -291,8 +291,8 @@ DinamicArray* map(const DinamicArray* arr,
 }
 
 DinamicArray* where(const DinamicArray* arr, 
-                int (*predicate)(const void*, ArrayErrors*),
-                ArrayErrors* error) {
+                int (*predicate)(const void*, AllErrors*),
+                AllErrors* error) {
     if (arr == NULL || predicate == NULL) {
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -348,8 +348,8 @@ DinamicArray* where(const DinamicArray* arr,
 }
 
 void* reduce(const DinamicArray* arr, 
-                void* (*binop)(const void*, const void*, ArrayErrors*), 
-                const void* init, ArrayErrors* error) {
+                void* (*binop)(const void*, const void*, AllErrors*), 
+                const void* init, AllErrors* error) {
     
     if (arr == NULL || binop == NULL || init == NULL) {
         if (error) *error = NULL_POINTER;
@@ -387,7 +387,7 @@ void* reduce(const DinamicArray* arr,
 }
 
 DinamicArray* concatenation(DinamicArray* arr1, DinamicArray* arr2, 
-                            ArrayErrors* error) {
+                            AllErrors* error) {
     if (arr1 == NULL || arr2 == NULL) {
         if (error) *error = NULL_POINTER;
         return NULL;

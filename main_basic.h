@@ -20,14 +20,14 @@ void do_where();
 void do_reduce();
 void do_concatenation();
 
-void string_to_upper(const void* src, void* dst, ArrayErrors* error);
-void string_to_lower(const void* src, void* dst, ArrayErrors* error);
-int string_length_4(const char* elem, ArrayErrors* error);
-int string_contains_y(const char* elem, ArrayErrors* error);
-char* string_concat_op(const char* a, const char* b, ArrayErrors* error);
+void string_to_upper(const void* src, void* dst, AllErrors* error);
+void string_to_lower(const void* src, void* dst, AllErrors* error);
+int string_length_4(const void* elem, AllErrors* error);
+int string_contains_y(const void* elem, AllErrors* error);
+void* string_concat_op(const void* a, const void* b, AllErrors* error);
 
-void func_apply_to_arg(const void* src, void* dst, ArrayErrors* error);
-void func_apply_to_8(const void* src, void* dst, ArrayErrors* error);
-int func_even(IntFunc f, ArrayErrors* error);
-int func_greater_than_10(IntFunc f, ArrayErrors* error);
-IntFunc func_compose(IntFunc f, IntFunc g, ArrayErrors* error);
+void func_apply_to_arg(const void* src, void* dst, AllErrors* error);
+void func_apply_to_8(const void* src, void* dst, AllErrors* error);
+int func_even(const void* a, AllErrors* error);
+int func_greater_than_10(const void * a, AllErrors* error);
+void * func_compose(const void* a, const void* b, AllErrors* error);

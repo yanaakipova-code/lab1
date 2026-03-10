@@ -41,7 +41,7 @@ void print_test_summary() {
 void test_create_array() {
     puts("--- тест для функции create_array ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* string_type = GetStringTypeInfo();
     
     total_tests++;
@@ -67,7 +67,7 @@ void test_create_array() {
 void test_append() {
     puts("--- тест для функции append ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* string_type = GetStringTypeInfo();
     DinamicArray* arr = create_array(string_type, &error);
     
@@ -106,7 +106,7 @@ void test_append() {
 void test_get() {
     puts("--- тест для функции get ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* string_type = GetStringTypeInfo();
     DinamicArray* arr = create_array(string_type, &error);
     
@@ -156,7 +156,7 @@ void test_get() {
 void test_get_size() {
     puts("--- тест для функции get_size ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* string_type = GetStringTypeInfo();
     DinamicArray* arr = create_array(string_type, &error);
     
@@ -194,7 +194,7 @@ void test_get_size() {
 void test_add_to_array() {
     puts("--- тест для функции add_to_array ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* int_type = GetIntTypeInfo();
     DinamicArray* arr = create_array(int_type, &error);
     
@@ -235,7 +235,7 @@ void test_add_to_array() {
 void test_array_to_string() {
     puts("--- тест для функции array_to_string ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* string_type = GetStringTypeInfo();
     DinamicArray* arr = create_array(string_type, &error);
     
@@ -277,7 +277,7 @@ void test_array_to_string() {
 void test_destroy_array() {
     puts("--- тест для функции destroy_array ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* string_type = GetStringTypeInfo();
     total_tests++;
     DinamicArray* arr = create_array(string_type, &error);
@@ -307,7 +307,7 @@ void test_destroy_array() {
 void test_increasing_size() {
     puts("--- тест для увеличения размера массива ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* int_type = GetIntTypeInfo();
     DinamicArray* arr = create_array(int_type, &error);
     
@@ -358,7 +358,7 @@ void test_increasing_size() {
 void test_string_functions() {
     puts("--- тест для функций работы со строками ---");
     
-    ArrayErrors error;
+    AllErrors error;
     
     total_tests++;
     char* upper = (char*)string_to_upper("hello", &error);
@@ -430,7 +430,7 @@ void test_string_functions() {
 void test_func_functions() {
     puts("--- тест для функций работы с функциями ---");
     
-    ArrayErrors error;
+    AllErrors error;
     
     total_tests++;
     int* res1 = (int*)func_apply_to_8_wrapper(inc, &error);
@@ -503,7 +503,7 @@ void test_func_functions() {
 void test_map_string() {
     puts("--- тест для функции map со строками ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* string_type = GetStringTypeInfo();
     DinamicArray* arr = create_array(string_type, &error);
     
@@ -536,7 +536,7 @@ void test_map_string() {
 void test_map_func() {
     puts("--- тест для функции map с функциями ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* func_type = GetFuncTypeInfo();
     TypeInfo* int_type = GetIntTypeInfo();
     DinamicArray* arr = create_array(func_type, &error);
@@ -579,7 +579,7 @@ void test_map_func() {
 void test_where_string() {
     puts("--- тест для функции where со строками ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* string_type = GetStringTypeInfo();
     DinamicArray* arr = create_array(string_type, &error);
     
@@ -613,7 +613,7 @@ void test_where_string() {
 void test_where_func() {
     puts("--- тест для функции where с функциями ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* func_type = GetFuncTypeInfo();
     DinamicArray* arr = create_array(func_type, &error);
     
@@ -646,7 +646,7 @@ void test_where_func() {
 void test_reduce_string() {
     puts("--- тест для функции reduce со строками ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* string_type = GetStringTypeInfo();
     DinamicArray* arr = create_array(string_type, &error);
     
@@ -681,7 +681,7 @@ void test_reduce_string() {
 void test_reduce_func() {
     puts("--- тест для функции reduce с функциями ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* func_type = GetFuncTypeInfo();
     DinamicArray* arr = create_array(func_type, &error);
     
@@ -714,7 +714,7 @@ void test_reduce_func() {
 void test_concatenation() {
     puts("--- тест для функции concatenation ---");
     
-    ArrayErrors error;
+    AllErrors error;
     TypeInfo* string_type = GetStringTypeInfo();
     
     DinamicArray* arr1 = create_array(string_type, &error);

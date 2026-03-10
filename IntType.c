@@ -4,7 +4,7 @@
 
 static TypeInfo* int_type_info = NULL;
 
-void* int_clone(const void* elem, ArrayErrors* error){
+void* int_clone(const void* elem, AllErrors* error){
     if (!elem){
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -21,7 +21,7 @@ void* int_clone(const void* elem, ArrayErrors* error){
     return copy;
 }
 
-void int_free(void* elem, ArrayErrors* error){
+void int_free(void* elem, AllErrors* error){
     if (elem){
         free(elem);
         if (error) *error = ARRAY_OK;
@@ -30,7 +30,7 @@ void int_free(void* elem, ArrayErrors* error){
     }
 }
 
-char* int_to_string(const void* elem, ArrayErrors* error) {
+char* int_to_string(const void* elem, AllErrors* error) {
     if (!elem) {
         if (error) *error = NULL_POINTER;
         return NULL;
