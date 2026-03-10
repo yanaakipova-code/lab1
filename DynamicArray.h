@@ -22,8 +22,8 @@ char* array_to_string(const DinamicArray* arr, ArrayErrors* error);
 void add_to_array(DinamicArray* arr, void* elem, ArrayErrors* error);
 
 DinamicArray* map(const DinamicArray* arr, 
-                void* (*transform)(const void*, ArrayErrors*),
-                TypeInfo* new_type, ArrayErrors* error);
+                void (*transform)(const void* src, void* dst, ArrayErrors*),
+                TypeInfo* new_type, ArrayErrors* error) ;
 DinamicArray* where(const DinamicArray* arr, 
                 int (*predicate)(const void*, ArrayErrors*),
                 ArrayErrors* error);

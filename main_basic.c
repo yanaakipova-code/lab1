@@ -392,8 +392,8 @@ void do_where() {
         int (*predicate)(const void*, ArrayErrors*) = NULL;
         
         switch (choice) {
-            case 1: predicate = string_length_4_wrapper; break;
-            case 2: predicate = string_contains_y_wrapper; break;
+            case 1: predicate = string_length_4; break;
+            case 2: predicate = string_contains_y; break;
             default: puts("Неверный выбор"); return;
         }
         
