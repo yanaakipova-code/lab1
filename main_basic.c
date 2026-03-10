@@ -13,6 +13,48 @@ void clear_input(){
     while ((c = getchar()) != '\n' && c != EOF);
 }
 
+void* string_to_upper_wrapper(const void* elem, ArrayErrors* error) {
+    return string_to_upper((const char*)elem, error);
+}
+void* string_to_lower_wrapper(const void* elem, ArrayErrors* error) {
+    return string_to_lower((const char*)elem, error);
+}
+int string_length_4_wrapper(const void* elem, ArrayErrors* error) {
+    return string_length_4((const char*)elem, error) ? 1 : 0;
+}
+int string_contains_y_wrapper(const void* elem, ArrayErrors* error) {
+    return string_contains_y((const char*)elem, error) ? 1 : 0;
+}
+void* string_concat_op_wrapper(const void* a, const void* b, ArrayErrors* error) {
+    return string_concat_op((const char*)a, (const char*)b, error);
+}
+
+void* func_apply_to_arg_wrapper(const void* elem, ArrayErrors* error) {
+    extern int current_arg;
+    return func_apply_to_arg((IntFunc)elem, current_arg, error);
+}
+void* func_apply_to_8_wrapper(const void* elem, ArrayErrors* error) {
+    return func_apply_to_8((IntFunc)elem, error);
+}
+int func_even_wrapper(const void* elem, ArrayErrors* error) {
+    if (func_even((IntFunc)elem, error)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+int func_greater_than_10_wrapper(const void* elem, ArrayErrors* error) {
+    if (func_greater_than_10((IntFunc)elem, error)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+void* func_compose_op_wrapper(const void* a, const void* b, ArrayErrors* error) {
+    return func_compose((IntFunc)a, (IntFunc)b, error);
+}
+
+
 int inc(int x) {
     return x + 1;
 }
@@ -106,7 +148,6 @@ void add_element() {
             clear_input();
         }       
         
-        append(current_array, buffer, &last_error);
         if (last_error == ARRAY_OK) {
             puts("Строка добавлена");
         } else {
@@ -160,7 +201,7 @@ void show_array(){
     }
 }
 
-void* string_to_upper(const void* elem, ArrayErrors* error){
+char* string_to_upper(const char* elem, ArrayErrors* error){
     if (!elem){
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -181,7 +222,7 @@ void* string_to_upper(const void* elem, ArrayErrors* error){
     return result;
 }
 
-void* string_to_lower(const void* elem, ArrayErrors* error) {
+char* string_to_lower(const char* elem, ArrayErrors* error) {
     if (!elem) {
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -202,7 +243,7 @@ void* string_to_lower(const void* elem, ArrayErrors* error) {
     return result;
 }
 
-int string_length_4(const void* elem, ArrayErrors* error) {
+int string_length_4(const char* elem, ArrayErrors* error) {
     if (!elem){
         if (error) *error = NULL_POINTER;
         return 0;
@@ -213,7 +254,7 @@ int string_length_4(const void* elem, ArrayErrors* error) {
     return strlen(str) > 4;
 }
 
-int string_contains_y(const void* elem, ArrayErrors* error) {
+int string_contains_y(const char* elem, ArrayErrors* error) {
     if (!elem) {
         if (error) *error = NULL_POINTER;
         return 0;
@@ -224,7 +265,7 @@ int string_contains_y(const void* elem, ArrayErrors* error) {
     return strchr(str, 'y') != NULL || strchr(str, 'Y') != NULL;
 }
 
-void* string_concat_op(const void* a, const void* b, ArrayErrors* error){
+char* string_concat_op(const char* a, const char* b, ArrayErrors* error){
     if (!a || !b){
         if (error) *error = NULL_POINTER;
         return NULL;
@@ -247,74 +288,53 @@ void* string_concat_op(const void* a, const void* b, ArrayErrors* error){
 }
 
 
-void* func_apply_to_arg_wrapper(const void* elem, ArrayErrors* error){
-    if (!elem){
+int* func_apply_to_arg(IntFunc f, int arg, ArrayErrors* error) {
+    if (!f) {
         if (error) *error = NULL_POINTER;
         return NULL;
     }
     
-    IntFunc f = (IntFunc)elem;
     int* result = (int*)malloc(sizeof(int));
-    if (!result){
+    if (!result) {
         if (error) *error = MEMORY_ALLOCATION_FAILED;
         return NULL;
     }
     
-    *result = f(current_arg);
+    *result = f(arg);
     if (error) *error = ARRAY_OK;
     return result;
 }
 
-int func_even_wrapper(const void* elem, ArrayErrors* error){
-    if (!elem){
+int* func_apply_to_8(IntFunc f, ArrayErrors* error) {
+    return func_apply_to_arg(f, 8, error);
+}
+
+int func_even(IntFunc f, ArrayErrors* error) {
+    if (!f) {
         if (error) *error = NULL_POINTER;
         return 0;
     }
-    
-    IntFunc f = (IntFunc)elem;
     if (error) *error = ARRAY_OK;
     return f(7) % 2 == 0;
 }
 
-void* func_apply_to_8_wrapper(const void* elem, ArrayErrors* error){
-    if (!elem){
-        if (error) *error = NULL_POINTER;
-        return NULL;
-    }
-    
-    IntFunc f = (IntFunc)elem;
-    int* result = (int*)malloc(sizeof(int));
-    if (!result){
-        if (error) *error = MEMORY_ALLOCATION_FAILED;
-        return NULL;
-    }
-    
-    *result = f(8);
-    if (error) *error = ARRAY_OK;
-    return result;
-}
-
-int func_greater_than_10_wrapper(const void* elem, ArrayErrors* error){
-    if (!elem){
+int func_greater_than_10(IntFunc f, ArrayErrors* error) {
+    if (!f) {
         if (error) *error = NULL_POINTER;
         return 0;
     }
-    
-    IntFunc f = (IntFunc)elem;
     if (error) *error = ARRAY_OK;
     return f(7) > 10;
 }
 
-void* func_compose_op(const void* a, const void* b, ArrayErrors* error){
-    if (!a || !b){
+IntFunc func_compose(IntFunc f, IntFunc g, ArrayErrors* error) {
+    if (!f || !g) {
         if (error) *error = NULL_POINTER;
         return NULL;
     }
-    
     if (error) *error = ARRAY_OK;
-    return (void*)b;
+    return g;
 }
-
 
 void do_map() {
     if (!current_array) {
@@ -335,8 +355,8 @@ void do_map() {
         void* (*transform)(const void*, ArrayErrors*) = NULL;
         
         switch (choice) {
-            case 1: transform = string_to_upper; break;
-            case 2: transform = string_to_lower; break;
+            case 1: transform = string_to_upper_wrapper; break;
+            case 2: transform = string_to_lower_wrapper; break;
             default: puts("Неверный выбор"); return;
         }
         
@@ -416,8 +436,8 @@ void do_where() {
         int (*predicate)(const void*, ArrayErrors*) = NULL;
         
         switch (choice) {
-            case 1: predicate = string_length_4; break;
-            case 2: predicate = string_contains_y; break;
+            case 1: predicate = string_length_4_wrapper; break;
+            case 2: predicate = string_contains_y_wrapper; break;
             default: puts("Неверный выбор"); return;
         }
         
@@ -505,7 +525,7 @@ void do_reduce() {
         }
         
         void* init = "";
-        void* result = reduce(current_array, string_concat_op, init, &last_error);
+        void* result = reduce(current_array, string_concat_op_wrapper, init, &last_error);
         
         if (result) {
             printf("Результат reduce: ");
@@ -534,7 +554,7 @@ void do_reduce() {
         }
         
         void* init = get(current_array, 0, &last_error);
-        void* result = reduce(current_array, func_compose_op, init, &last_error);
+        void* result = reduce(current_array, func_compose_op_wrapper, init, &last_error);
         
         if (result) {
             printf("Результат reduce: композиция функций\n");
