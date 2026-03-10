@@ -12,14 +12,28 @@ void clear_input(){
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
+
+int inc(int x) {
+    return x + 1;
+}
+
+int dec(int x) {
+    return x - 1;
+}
+
+int square(int x) {
+    return x * x;
+}
+
 void print_error(const char* context){
     printf("Ошибка в %s: ", context);
     switch (last_error){
-        case ARRAY_OK: printf("нет ошибки"); break;
-        case MEMORY_ALLOCATION_FAILED: printf("не удалось выделить память"); break;
-        case NULL_POINTER: printf("нулевой указатель"); break;
-        case INDEX_OUT: printf("индекс вне диапазона"); break;
-        case DIFFERENT_TYPE: printf("несовместимые типы"); break;
+        case ARRAY_OK: puts("нет ошибки"); break;
+        case MEMORY_ALLOCATION_FAILED: puts("не удалось выделить память"); break;
+        case NULL_POINTER: puts("нулевой указатель"); break;
+        case INDEX_OUT: puts("индекс вне диапазона"); break;
+        case DIFFERENT_TYPE: puts("несовместимые типы"); break;
+        case ACTION_UNDEFINED: puts("Функция не реализована"); break;
         default: printf("неизвестная ошибка (%d)", last_error);
     }
 }
@@ -42,7 +56,7 @@ void create_string_array(){
         destroy_array(current_array, &last_error);
     }
     
-    current_array = create_array(GetStringTypeInfo(), &last_error);
+    current_array = create_array(get_string_type_info(), &last_error);
     if (last_error == ARRAY_OK){
         puts("Массив строк создан");
         append(current_array, "hello", &last_error);
@@ -63,14 +77,14 @@ void create_func_array(){
         destroy_array(current_array, &last_error);
     }
     
-    current_array = create_array(GetFuncTypeInfo(), &last_error);
+    current_array = create_array(get_func_type_info(), &last_error);
     if (last_error == ARRAY_OK){
         puts("Массив функций создан");
         append(current_array, inc, &last_error);
         append(current_array, dec, &last_error);
         append(current_array, square, &last_error);
         puts("Добавлены тестовые функции");
-    } else{
+    } else {
         print_error("create_func_array");
     }
 }
@@ -80,66 +94,56 @@ void add_element() {
         puts("Сначала создайте массив");
         return;
     }
-    
-    switch (current_array->type->kind){
-        case TYPE_STRING:{
-            char buffer[256];
-            printf("Введите строку: ");
+
+    if (current_array->type->clone == string_clone) {
+        char buffer[64];
+        printf("Введите строку: ");
+        if (scanf("%64s", buffer) == 1) {
             clear_input();
-            fgets(buffer, sizeof(buffer), stdin);
-            buffer[strcspn(buffer, "\n")] = '\0';
-            
-            if (strlen(buffer) == 0) {
-                puts("Строка не может быть пустой");
+            append(current_array, buffer, &last_error);
+        } else {
+            puts("Ошибка ввода");
+            clear_input();
+        }       
+        
+        append(current_array, buffer, &last_error);
+        if (last_error == ARRAY_OK) {
+            puts("Строка добавлена");
+        } else {
+            print_error("add_element");
+        }
+    }else if (current_array->type->clone == func_clone){
+        puts("Выберите функцию:");
+        puts("1. inc (+1)");
+        puts("2. dec (-1)");
+        puts("3. square (x*x)");
+        printf("Ваш выбор: ");
+
+        unsigned int choice;
+        scanf("%u", &choice);
+        clear_input();
+
+        void* func = NULL;
+        const char* name = NULL;
+        switch (choice){
+            case 1: func = inc; name = "inc"; break;
+            case 2: func = dec; name = "dec"; break;
+            case 3: func = square; name = "square"; break;
+            default:
+                puts("Неверный выбор");
                 return;
             }
-            
-            append(current_array, buffer, &last_error);
-            if (last_error == ARRAY_OK) {
-                printf("Строка \"%s\" добавлена\n", buffer);
-            } else{
-                print_error("add_element");
-            }
-            break;
-        }
-        
-        case TYPE_FUNC: {
-            puts("Выберите функцию:");
-            puts("1. inc (+1)");
-            puts("2. dec (-1)");
-            puts("3. square (x*x)");
-            printf("Ваш выбор: ");
-            
-            unsigned int choice;
-            scanf("%u", &choice);
-            clear_input();
-            
-            void* func = NULL;
-            const char* name = NULL;
-            
-            switch (choice){
-                case 1: func = inc; name = "inc"; break;
-                case 2: func = dec; name = "dec"; break;
-                case 3: func = square; name = "square"; break;
-                default:
-                    puts("Неверный выбор");
-                    return;
-            }
-            
             append(current_array, func, &last_error);
             if (last_error == ARRAY_OK){
                 printf("Функция %s добавлена\n", name);
             } else {
                 print_error("add_element");
             }
-            break;
-        }
-        
-        default:
-            puts("Неподдерживаемый тип");
+    }else {
+        puts("Неподдерживаемый тип");
     }
 }
-
+            
 void show_array(){
     if (!current_array){
         puts("Массив не создан");
@@ -318,80 +322,78 @@ void do_map() {
         return;
     }
     
-    switch (current_array->type->kind) {
-        case TYPE_STRING: {
-            puts("Выберите преобразование:");
-            puts("1. toUpperCase");
-            puts("2. toLowerCase");
-            printf("Ваш выбор: ");
-            
-            unsigned int choice;
-            scanf("%u", &choice);
-            clear_input();
+    if (current_array->type->clone == string_clone) {
+        puts("Выберите преобразование:");
+        puts("1. toUpperCase");
+        puts("2. toLowerCase");
+        printf("Ваш выбор: ");
+        
+        unsigned int choice;
+        scanf("%u", &choice);
+        clear_input();
 
-            void* (*transform)(const void*, ArrayErrors*) = NULL;
-            
-            switch (choice) {
-                case 1: transform = string_to_upper; break;
-                case 2: transform = string_to_lower; break;
-                default: puts("Неверный выбор"); return;
-            }
-            
-            DinamicArray* result = map(current_array, transform,
-                                       GetStringTypeInfo(), &last_error);
-            if (result) {
-                puts("Результат map:");
-                char* str = array_to_string(result, &last_error);
-                if (str) {
-                    printf("%s\n", str);
-                    free(str);
-                }
-                destroy_array(result, &last_error);
-            } else {
-                print_error("map");
-            }
-            break;
+        void* (*transform)(const void*, ArrayErrors*) = NULL;
+        
+        switch (choice) {
+            case 1: transform = string_to_upper; break;
+            case 2: transform = string_to_lower; break;
+            default: puts("Неверный выбор"); return;
         }
         
-        case TYPE_FUNC: {
-            puts("Выберите аргумент:");
-            puts("1. Применить к 8");
-            puts("2. Применить к введенному числу");
-            printf("Ваш выбор: ");
-            
-            unsigned int choice;
-            scanf("%u", &choice);
-            clear_input();
-            
-            void* (*transform)(const void*, ArrayErrors*) = NULL;
-            
-            if (choice == 1) {
-                transform = func_apply_to_8_wrapper;
-            } else if (choice == 2) {
-                printf("Введите число: ");
-                scanf("%d", &current_arg);
-                clear_input();
-                transform = func_apply_to_arg_wrapper;
-            } else {
-                puts("Неверный выбор");
-                return;
+        DinamicArray* result = map(current_array, transform,
+                                   get_string_type_info(), &last_error);
+        if (result) {
+            puts("Результат map:");
+            char* str = array_to_string(result, &last_error);
+            if (str) {
+                printf("%s\n", str);
+                free(str);
             }
-            
-            DinamicArray* result = map(current_array, transform,
-                                       GetIntTypeInfo(), &last_error);
-            if (result) {
-                puts("Результаты применения функций:");
-                char* str = array_to_string(result, &last_error);
-                if (str) {
-                    printf("%s\n", str);
-                    free(str);
-                }
-                destroy_array(result, &last_error);
-            } else {
-                print_error("map");
-            }
-            break;
+            destroy_array(result, &last_error);
+        } else {
+            print_error("map");
         }
+    }
+    else if (current_array->type->clone == func_clone) {
+        puts("Выберите аргумент:");
+        puts("1. Применить к 8");
+        puts("2. Применить к введенному числу");
+        printf("Ваш выбор: ");
+        
+        unsigned int choice;
+        scanf("%u", &choice);
+        clear_input();
+        
+        void* (*transform)(const void*, ArrayErrors*) = NULL;
+        
+        if (choice == 1) {
+            transform = func_apply_to_8_wrapper;
+        } else if (choice == 2) {
+            printf("Введите число: ");
+            scanf("%d", &current_arg);
+            clear_input();
+            transform = func_apply_to_arg_wrapper;
+        } else {
+            puts("Неверный выбор");
+            return;
+        }
+        
+        DinamicArray* result = map(current_array, transform,
+                                   get_int_type_info(), &last_error);
+        if (result) {
+            puts("Результаты применения функций:");
+            char* str = array_to_string(result, &last_error);
+            if (str) {
+                printf("%s\n", str);
+                free(str);
+            }
+            destroy_array(result, &last_error);
+        } else {
+            print_error("map");
+        }
+    }
+    else {
+        puts("Неподдерживаемый тип для map");
     }
 }
 
@@ -401,81 +403,81 @@ void do_where() {
         return;
     }
     
-    switch (current_array->type->kind) {
-        case TYPE_STRING: {
-            puts("Выберите условие:");
-            puts("1. Длина > 4");
-            puts("2. Содержит букву 'y'");
-            printf("Ваш выбор: ");
-            
-            unsigned int choice;
-            scanf("%u", &choice);
-            clear_input();
-            
-            int (*predicate)(const void*, ArrayErrors*) = NULL;
-            
-            switch (choice) {
-                case 1: predicate = string_length_4; break;
-                case 2: predicate = string_contains_y; break;
-                default: puts("Неверный выбор"); return;
-            }
-            DinamicArray* result = where(current_array, predicate, &last_error);
-            if (result) {
-                printf("Результат where: ");
-                if (get_size(result, &last_error) > 0) {
-                    char* str = array_to_string(result, &last_error);
-                    if (str) {
-                        printf("%s\n", str);
-                        free(str);
-                    }
-                } else {
-                    puts("пусто");
-                }
-                destroy_array(result, &last_error);
-            } else {
-                print_error("where");
-            }
-            break;
+    if (current_array->type->clone == string_clone) {
+        puts("Выберите условие:");
+        puts("1. Длина > 4");
+        puts("2. Содержит букву 'y'");
+        printf("Ваш выбор: ");
+        
+        unsigned int choice;
+        scanf("%u", &choice);
+        clear_input();
+        
+        int (*predicate)(const void*, ArrayErrors*) = NULL;
+        
+        switch (choice) {
+            case 1: predicate = string_length_4; break;
+            case 2: predicate = string_contains_y; break;
+            default: puts("Неверный выбор"); return;
         }
         
-        case TYPE_FUNC: {
-            puts("Выберите условие:");
-            puts("1. f(7) > 10");
-            puts("2. f(7) - четное");
-            printf("Ваш выбор: ");
-            
-            unsigned int choice;
-            scanf("%u", &choice);
-            clear_input();
-            
-            int (*predicate)(const void*, ArrayErrors*) = NULL;
-            
-            switch (choice) {
-                case 1: predicate = func_greater_than_10_wrapper; break;
-                case 2: predicate = func_even_wrapper; break;
-                default: puts("Неверный выбор"); return;
-            }
-            
-            DinamicArray* result = where(current_array, predicate, &last_error);
-            if (result) {
-                printf("Результат where: ");
-                if (get_size(result, &last_error) > 0) {
-                    char* str = array_to_string(result, &last_error);
-                    if (str) {
-                        printf("%s\n", str);
-                        free(str);
-                    }
-                } else {
-                    puts("пусто");
+        DinamicArray* result = where(current_array, predicate, &last_error);
+        if (result) {
+            printf("Результат where: ");
+            if (get_size(result, &last_error) > 0) {
+                char* str = array_to_string(result, &last_error);
+                if (str) {
+                    printf("%s\n", str);
+                    free(str);
                 }
-                destroy_array(result, &last_error);
             } else {
-                print_error("where");
+                puts("пусто");
             }
-            break;
+            destroy_array(result, &last_error);
+        } else {
+            print_error("where");
         }
     }
+    else if (current_array->type->clone == func_clone) {
+        puts("Выберите условие:");
+        puts("1. f(7) > 10");
+        puts("2. f(7) - четное");
+        printf("Ваш выбор: ");
+        
+        unsigned int choice;
+        scanf("%u", &choice);
+        clear_input();
+        
+        int (*predicate)(const void*, ArrayErrors*) = NULL;
+        
+        switch (choice) {
+            case 1: predicate = func_greater_than_10_wrapper; break;
+            case 2: predicate = func_even_wrapper; break;
+            default: puts("Неверный выбор"); return;
+        }
+        
+        DinamicArray* result = where(current_array, predicate, &last_error);
+        if (result) {
+            printf("Результат where: ");
+            if (get_size(result, &last_error) > 0) {
+                char* str = array_to_string(result, &last_error);
+                if (str) {
+                    printf("%s\n", str);
+                    free(str);
+                }
+            } else {
+                puts("пусто");
+            }
+            destroy_array(result, &last_error);
+        } else {
+            print_error("where");
+        }
+    }
+    else {
+        puts("Неподдерживаемый тип для where");
+    }
 }
+
 
 void do_reduce() {
     if (!current_array) {
@@ -488,64 +490,62 @@ void do_reduce() {
         return;
     }
     
-    switch (current_array->type->kind) {
-        case TYPE_STRING: {
-            puts("Выберите операцию:");
-            puts("1. Конкатенация строк");
-            printf("Ваш выбор: ");
-            
-            unsigned int choice;
-            scanf("%u", &choice);
-            clear_input();
-            
-            if (choice != 1) {
-                puts("Неверный выбор");
-                return;
-            }
-            
-            void* init = "";
-            void* result = reduce(current_array, string_concat_op, init, &last_error);
-            
-            if (result) {
-                printf("Результат reduce: ");
-                char* str = current_array->type->to_string(result, &last_error);
-                if (str) {
-                    printf("%s\n", str);
-                    free(str);
-                }
-                current_array->type->free(result, &last_error);
-            } else {
-                print_error("reduce");
-            }
-            break;
+    if (current_array->type->clone == string_clone) {
+        puts("Выберите операцию:");
+        puts("1. Конкатенация строк");
+        printf("Ваш выбор: ");
+        
+        unsigned int choice;
+        scanf("%u", &choice);
+        clear_input();
+        
+        if (choice != 1) {
+            puts("Неверный выбор");
+            return;
         }
         
-        case TYPE_FUNC: {
-            puts("Выберите операцию:");
-            puts("1. Композиция функций");
-            printf("Ваш выбор: ");
-            
-            unsigned int choice;
-            scanf("%u", &choice);
-            clear_input();
-
-            if (choice != 1) {
-                puts("Неверный выбор");
-                return;
+        void* init = "";
+        void* result = reduce(current_array, string_concat_op, init, &last_error);
+        
+        if (result) {
+            printf("Результат reduce: ");
+            char* str = current_array->type->to_string(result, &last_error);
+            if (str) {
+                printf("%s\n", str);
+                free(str);
             }
-            
-            void* init = get(current_array, 0, &last_error);
-            void* result = reduce(current_array, func_compose_op, init, &last_error);
-            
-            if (result) {
-                printf("Результат reduce: композиция функций\n");
-                int test_val = ((IntFunc)result)(5);
-                printf("Пример: (f1 ∘ f2 ∘ ...)(5) = %d\n", test_val);
-            } else {
-                print_error("reduce");
-            }
-            break;
+            current_array->type->free(result, &last_error);
+        } else {
+            print_error("reduce");
         }
+    }
+    else if (current_array->type->clone == func_clone) {
+        puts("Выберите операцию:");
+        puts("1. Композиция функций");
+        printf("Ваш выбор: ");
+        
+        unsigned int choice;
+        scanf("%u", &choice);
+        clear_input();
+
+        if (choice != 1) {
+            puts("Неверный выбор");
+            return;
+        }
+        
+        void* init = get(current_array, 0, &last_error);
+        void* result = reduce(current_array, func_compose_op, init, &last_error);
+        
+        if (result) {
+            printf("Результат reduce: композиция функций\n");
+            int test_val = ((IntFunc)result)(5);
+            printf("Пример: (f1 ∘ f2 ∘ ...)(5) = %d\n", test_val);
+        } else {
+            print_error("reduce");
+        }
+    }
+    else {
+        puts("Неподдерживаемый тип для reduce");
     }
 }
 
@@ -557,20 +557,23 @@ void do_concatenation(){
     
     DinamicArray* second_array = NULL;
     
-    if (current_array->type->kind == TYPE_STRING){
-        second_array = create_array(GetStringTypeInfo(), &last_error);
+    if (current_array->type->clone == string_clone){
+        second_array = create_array(get_string_type_info(), &last_error);
         if (last_error == ARRAY_OK) {
             append(second_array, "extra", &last_error);
             append(second_array, "data", &last_error);
             puts("Создан второй массив: [\"extra\", \"data\"]");
         }
-    } else {
-        second_array = create_array(GetFuncTypeInfo(), &last_error);
+    } else if (current_array->type->clone == func_clone) {
+        second_array = create_array(get_func_type_info(), &last_error);
         if (last_error == ARRAY_OK) {
             append(second_array, inc, &last_error);
             append(second_array, square, &last_error);
             puts("Создан второй массив: [inc, square]");
         }
+    } else {
+        puts("Неподдерживаемый тип для конкатенации");
+        return;
     }
 
     if (!second_array){
@@ -588,7 +591,9 @@ void do_concatenation(){
             free(str);
         }
         destroy_array(result, &last_error);
-    } else print_error("concatenation");
+    } else {
+        print_error("concatenation");
+    }
     
     destroy_array(second_array, &last_error);
 }

@@ -22,7 +22,7 @@ void func_free(void* elem, ArrayErrors* error) {
     if (error) *error = ACTION_UNDEFINED;
 }
 
-static char* func_to_string(const void* elem, ArrayErrors* error) {
+char* func_to_string(const void* elem, ArrayErrors* error) {
     if (elem == NULL) {
         if (error) *error = NULL_POINTER;
         return NULL;

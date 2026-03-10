@@ -5,5 +5,7 @@
 void* string_clone(const void* elem, ArrayErrors* error);
 void string_free(void* elem,ArrayErrors* error);
 char* string_to_string(const void* elem, ArrayErrors* error);
-TypeInfo* GetStringTypeInfo();
-void FreeStringTypeInfo();
+
+static size_t get_element_size();
+TypeInfo* get_string_type_info();
+
