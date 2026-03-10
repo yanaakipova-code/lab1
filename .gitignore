@@ -1,1 +1,4 @@
-"*.o" 
+*.o 
+*.exe 
+program.exe 
+test.exe 
