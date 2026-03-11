@@ -223,3 +223,25 @@ void test_array_to_string_int(){
     destroy_array(arr, &errors);
     print_test_res("test_array_to_string_int", 1);
 }
+
+int main(){
+    SetConsoleOutputCP(65001);
+    SetConsoleCP(65001);
+
+    puts("==================================================================");
+    puts("Тесты для файла DynamicArray.c, доролнительные функции с массивом");
+    puts("==================================================================");
+
+    test_create_array_string();
+    test_create_array_func();
+    test_create_array();
+    test_destroy_array_ok();
+    test_destroy_array_fl();
+    test_increasing_size();
+    test_increasing_size_fl();
+    test_append_fl();
+    test_get();
+    test_get_size();
+    test_array_to_string();
+    test_array_to_string_int();
+}
