@@ -67,6 +67,10 @@ void destroy_array(DinamicArray* arr, AllErrors* error){
 }
 
 void increasing_size(DinamicArray* arr, AllErrors* error){
+    if (arr == NULL){
+        if (error) *error = NULL_POINTER;
+        return;
+    }
     if (arr->size<arr->capacity){
          if (error) *error = ARRAY_OK;
         return;
