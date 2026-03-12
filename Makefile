@@ -1,37 +1,37 @@
+CC = gcc
+CFLAGS = -Wall -Wextra -I.
+AR = ar
+ARFLAGS = rcs
+
+LIB_SRCS = DynamicArray.o \
+	StringType.o \
+	FuncType.o \
+	IntType.o \
+	 main_basic.o
+
+LIB_OBJS = $(LIB_SRCS:.c=.o)
+MAIN_SRC = main.c
+
+LIB_NAME = libdynamicarray.a
 TARGET = program.exe
-.PHONY: all clean test run-tests
+
+.PHONY = all clean run lib
 
 all: $(TARGET)
 
-clean:
-	-del /f /q $(TARGET) *.o 2>nul || del $(TARGET) *.o
+$(TARGET): $(SRCS)
+	$(CC) $(CFLAGS) $(MAIN_SRC) -o $@ $(LIB_NAME) 
 
-main.o: main.c main_basic.h DynamicArray.h StringType.h FuncType.h IntType.h TypeInfo.h ArrayEror.h
-	gcc -c -o main.o main.c
+lib: $(LIB_NAME)
 
-main_basic.o: main_basic.c main_basic.h DynamicArray.h StringType.h FuncType.h IntType.h TypeInfo.h ArrayEror.h
-	gcc -c -o main_basic.o main_basic.c
+$(LIB_NAME): $(LIB_OBJS)
+	$(AR) $(ARFLAGS) $@ $^
 
-DynamicArray.o: DynamicArray.c DynamicArray.h TypeInfo.h ArrayEror.h FuncType.h StringType.h
-	gcc -c -o DynamicArray.o DynamicArray.c
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-StringType.o: StringType.c StringType.h TypeInfo.h ArrayEror.h
-	gcc -c -o StringType.o StringType.c
+run: $(TARGET)
+	$(TARGET)
 
-FuncType.o: FuncType.c FuncType.h TypeInfo.h ArrayEror.h
-	gcc -c -o FuncType.o FuncType.c
-
-IntType.o: IntType.c IntType.h TypeInfo.h ArrayEror.h
-	gcc -c -o IntType.o IntType.c
-
-test.o: test.c main_basic.h DynamicArray.h StringType.h FuncType.h IntType.h TypeInfo.h ArrayEror.h
-	gcc -c -o test.o test.c
-
-$(TARGET): main.o main_basic.o DynamicArray.o StringType.o FuncType.o IntType.o
-	gcc -o $(TARGET) main.o main_basic.o DynamicArray.o StringType.o FuncType.o IntType.o
-
-test: test.o main_basic.o DynamicArray.o StringType.o FuncType.o IntType.o
-	gcc -o test.exe test.o main_basic.o DynamicArray.o StringType.o FuncType.o IntType.o
-
-run-tests: test
-	test
+clean: 
+	del /q $(TARGET) *.o *.a
