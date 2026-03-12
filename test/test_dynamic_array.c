@@ -1,13 +1,4 @@
-#include "maintest.h"
-#include "main_basic.h" 
-#include "DynamicArray.h"
-#include "DynamicArray.c"
-#include "StringType.h"
-#include "FuncType.h"
-#include "IntType.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <test.h>
 
 TEST(create_array_string){
     puts("ТЕСТ 1.1");
@@ -18,13 +9,14 @@ TEST(create_array_string){
 
     assert(errors == ARRAY_OK);
     assert(arr != NULL);
-    assert(arr->size == ZERO_SIZE);
-    assert(arr->capacity == INITIAL_CAPACITY);
-
+    assert(arr->size == 0);
+    assert(arr->capacity == 2);
+    
+    destroy_array(arr, &errors);
 }
 
 TEST(test_create_array_func){ 
-    puts("ТЕСТ 1.1");
+    puts("ТЕСТ 1.2");
     puts("---Создание массива функций---");
     AllErrors errors;
 
@@ -32,18 +24,21 @@ TEST(test_create_array_func){
 
     assert(errors == ARRAY_OK);
     assert(arr != NULL);
-    assert(arr->size == ZERO_SIZE);
-    assert(arr->capacity == INITIAL_CAPACITY);
+    assert(arr->size == 0);
+    assert(arr->capacity == 2);
+    
+    destroy_array(arr, &errors);
 }
 
 TEST(test_create_array){
-    puts("ТЕСТ 1.1");
+    puts("ТЕСТ 1.3");
     puts("---Пограничное значение функции создания массива---");
     AllErrors errors;
 
     DinamicArray* arr = create_array(NULL, &errors);
 
     assert(errors == NULL_POINTER);
+    assert(arr == NULL);
 }
 
 TEST(test_destroy_array_ok){
@@ -72,13 +67,15 @@ TEST(test_append){
     puts("---добавление элемента в массив---");
     AllErrors errors;
     DinamicArray* arr = create_array(get_string_type_info(), &errors);
-    const char* elem ="y";
-    unsigned int start_capacity = arr->capacity;
+    const char* elem = "y";
+    unsigned int old_size = arr->size;
 
     append(arr, elem, &errors);
 
     assert(errors == ARRAY_OK);
-    assert(arr->size == start_capacity++);
+    assert(arr->size == old_size + 1);
+    
+    destroy_array(arr, &errors);
 }
 
 TEST(test_increasing_size){
@@ -86,23 +83,29 @@ TEST(test_increasing_size){
     puts("---Увеличение емкости массива---");
     AllErrors errors;
     DinamicArray* arr = create_array(get_string_type_info(), &errors);
-    const char* elem ="y";
+    const char* elem = "y";
     unsigned int start_capacity = arr->capacity;
 
     for (unsigned int i = 0; i < start_capacity; i++){
         append(arr, elem, &errors);
     }
+    assert(arr->size == start_capacity);
+    assert(arr->size == arr->capacity);
+
     append(arr, elem, &errors);
 
     assert(errors == ARRAY_OK);
-    assert(arr->capacity == start_capacity * RISING_AT_TWO);
+    assert(arr->capacity == start_capacity * 2);
+    
+    destroy_array(arr, &errors);
 }
 
 TEST(test_increasing_size_fl){
     puts("ТЕСТ 3.3");
     puts("---Увеличение ёмкости массива с NULL---");
     AllErrors errors;
-    increasing_size(NULL,&errors);
+    
+    increasing_size(NULL, &errors);
 
     assert(errors == NULL_POINTER); 
 }
@@ -110,10 +113,10 @@ TEST(test_increasing_size_fl){
 TEST(test_append_fl){
     puts("ТЕСТ 3.4");
     puts("---Добавление элемента с NULL---");
-    const char elem ="y";
+    const char* elem = "y";
     AllErrors errors;
 
-    append(NULL,elem, &errors);
+    append(NULL, elem, &errors);
 
     assert(errors == NULL_POINTER);
 }
@@ -128,11 +131,15 @@ TEST(get_by_valid_index){
     append(arr, "l", &errors);
     append(arr, "l", &errors);
     append(arr, "o", &errors);
+    
     char* element = (char*)get(arr, 2, &errors);
 
     assert(errors == ARRAY_OK);
     assert(strcmp(element, "l") == 0);
+    
+    destroy_array(arr, &errors);
 }
+
 TEST(get_by_index_negative){
     puts("ТЕСТ 4.2");
     puts("---Отрицательный индекс массива---");
@@ -143,16 +150,18 @@ TEST(get_by_index_negative){
     append(arr, "l", &errors);
     append(arr, "l", &errors);
     append(arr, "o", &errors);
-    char* element = (char*)get(arr, 2, &errors);
 
-    get(arr, -1, &errors);
+    char* element = (char*)get(arr, -1, &errors);
 
     assert(errors == INDEX_OUT);
+    assert(element == NULL);
+    
+    destroy_array(arr, &errors);
 }
 
 TEST(get_by_index_out_bounds){
     puts("ТЕСТ 4.3");
-    puts("---Индекс все диапазона---");
+    puts("---Индекс вне диапазона---");
     AllErrors errors;
     DinamicArray* arr = create_array(get_string_type_info(), &errors);
     append(arr, "h", &errors);
@@ -160,10 +169,13 @@ TEST(get_by_index_out_bounds){
     append(arr, "l", &errors);
     append(arr, "l", &errors);
     append(arr, "o", &errors);
-    char* element = (char*)get(arr, 2, &errors);
 
-    get(arr, 5, &errors);
+    char* element = (char*)get(arr, 5, &errors);
+
     assert(errors == INDEX_OUT);
+    assert(element == NULL);
+    
+    destroy_array(arr, &errors);
 }
 
 TEST(get_by_empty_array){
@@ -172,8 +184,12 @@ TEST(get_by_empty_array){
     AllErrors errors;
     DinamicArray* arr = create_array(get_string_type_info(), &errors);
 
-    get(arr, 0, &errors);
+    char* element = (char*)get(arr, 0, &errors);
+    
     assert(errors == INDEX_OUT);
+    assert(element == NULL);
+    
+    destroy_array(arr, &errors);
 }
 
 TEST(test_get_size){
@@ -185,9 +201,12 @@ TEST(test_get_size){
     append(arr, "e", &errors);
     append(arr, "l", &errors);
 
-    unsigned size = get_size(arr, &errors);
+    int size = get_size(arr, &errors);
 
+    assert(errors == ARRAY_OK);
     assert(size == 3);
+    
+    destroy_array(arr, &errors);
 }
 
 TEST(test_get_size_empty_array){
@@ -196,9 +215,12 @@ TEST(test_get_size_empty_array){
     AllErrors errors;
     DinamicArray* arr = create_array(get_string_type_info(), &errors);
 
-    unsigned size = get_size(arr, &errors);
+    int size = get_size(arr, &errors);
 
+    assert(errors == ARRAY_OK);
     assert(size == 0);
+    
+    destroy_array(arr, &errors);
 }
   
 TEST(test_get_size_null_array){
@@ -206,9 +228,10 @@ TEST(test_get_size_null_array){
     puts("---Получение размера массива с NULL---");
     AllErrors errors;
 
-    unsigned size = get_size(NULL, &errors);
+    int size = get_size(NULL, &errors);
 
     assert(errors == NULL_POINTER);
+    assert(size == -1);
 }
 
 TEST(test_array_to_string){
@@ -223,33 +246,38 @@ TEST(test_array_to_string){
     char* str = array_to_string(arr, &errors);
 
     assert(errors == ARRAY_OK);
+    assert(str != NULL);
     assert(strcmp(str, "[\"hello\", \"world\", \"!\"]") == 0);
     
-    free(arr);
+    free(str);
+    destroy_array(arr, &errors);
 }
+
 TEST(test_array_to_string_empty_array){
     puts("ТЕСТ 6.2");
     puts("---Преобразование пустого массива в строку---");
     AllErrors errors;
     DinamicArray* empty_arr = create_array(get_string_type_info(), &errors);
 
-    unsigned str = array_to_string(empty_arr, &errors);
+    char* str = array_to_string(empty_arr, &errors);
 
     assert(errors == ARRAY_OK);
     assert(str != NULL);
     assert(strcmp(str, "[]") == 0);
 
     free(str);
+    destroy_array(empty_arr, &errors);
 }
+
 TEST(test_array_to_string_null){
     puts("ТЕСТ 6.3");
     puts("---Преобразование массива в строку с NULL указателем---");
     AllErrors errors;
-    unsigned str = array_to_string(NULL, &errors);
+
+    char* str = array_to_string(NULL, &errors);
 
     assert(errors == NULL_POINTER);
     assert(str == NULL);
-    
 }
 
 TEST(array_to_string_int){
@@ -267,4 +295,7 @@ TEST(array_to_string_int){
     assert(errors == ARRAY_OK);
     assert(str != NULL);
     assert(strcmp(str, "[10, 20, 30]") == 0);
+    
+    free(str);
+    destroy_array(arr, &errors);
 }

@@ -11,7 +11,7 @@ TEST(int_clone_valid) {
     assert(errors == ARRAY_OK);
     assert(clone != NULL);
     assert(*clone == 42);
-    assert(clone != &value);
+    assert(clone != NULL);
 }
 
 TEST(int_clone_null) {

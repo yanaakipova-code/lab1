@@ -1,25 +1,4 @@
-#include "maintest.h"
-#include "main_basic.h" 
-#include "DynamicArray.h"
-#include "DynamicArray.c"
-#include "StringType.h"
-#include "FuncType.h"
-#include "IntType.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-int inc(int x) {
-    return x + 1;
-}
-
-int dec(int x) {
-    return x - 1;
-}
-
-int square(int x) {
-    return x * x;
-}
+#include <test.h>
 
 TEST(map_string_to_upper) {
     puts("ТЕСТ 7.1");
