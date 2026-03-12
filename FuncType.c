@@ -15,7 +15,7 @@ void* func_clone(const void* elem, AllErrors* error){
         return NULL;
     }
     if (error)*error = ARRAY_OK;
-    return (void*)elem;
+    return (void*)elem;  
 }
 
 void func_free(void* elem, AllErrors* error) {

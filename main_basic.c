@@ -253,7 +253,7 @@ void func_apply_to_arg(const void* src, void* dst, AllErrors* error) {
         if (error) *error = NULL_POINTER;
         return;
     }
-    int current_arg;
+    extern int current_arg;  
     int result = f(current_arg);
     
     *(int*)dst = result;
@@ -268,6 +268,8 @@ void func_apply_to_8(const void* src, void* dst, AllErrors* error) {
         return;
     }
     int result = f(8);
+    *(int*)dst = result;
+    if (error) *error = ARRAY_OK;
 }
 
 int func_even(const void * elem, AllErrors* error) {
@@ -300,7 +302,7 @@ void * func_compose( const void * a, const void * b, AllErrors* error) {
         return NULL;
     }
     if (error) *error = ARRAY_OK;
-    return (void*)b;
+    return (void*)b; 
 }
 
 void do_map() {
