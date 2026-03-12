@@ -86,6 +86,7 @@ TypeInfo* get_string_type_info() {
             string_type_info->clone = string_clone;
             string_type_info->free = string_free;
             string_type_info->to_string = string_to_string;
+            string_type_info->needs_free = 1;
         }
     }
     return string_type_info;

@@ -57,6 +57,7 @@ TypeInfo* get_int_type_info(){
             int_type_info->clone = int_clone;
             int_type_info->free = int_free;
             int_type_info->to_string  = int_to_string;
+            int_type_info->needs_free = 0;
         }
     }
     return int_type_info;

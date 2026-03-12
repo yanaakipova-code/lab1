@@ -45,25 +45,20 @@ void destroy_array(DinamicArray* arr, AllErrors* error){
         if (error) *error = NULL_POINTER;
         return;
     }
-    size_t elem_size = arr->type->elem_size(); 
-    char* ptr = (char*)arr->data;
-
-    for (unsigned int i = 0 ; i < arr->size; i++){
-         void* elem;
-        if (elem_size == sizeof(char*) || elem_size == sizeof(void*)) {
-            elem = *(void**)(ptr + i * elem_size);
-        } else {
-            elem = ptr + i * elem_size;
-        }
-        
-        if (elem) {
-            arr->type->free(elem, error);
+    if (arr->type->needs_free) {
+        size_t elem_size = arr->type->elem_size();
+        for (unsigned int i = 0; i < arr->size; i++) {
+            void* elem_ptr = *(void**)((char*)arr->data + i * elem_size);
+            if (elem_ptr) {
+                arr->type->free(elem_ptr, error);
+            }
         }
     }
+    
     free(arr->data);
     free(arr);
     
-    if (error)*error = ARRAY_OK;
+    if (error) *error = ARRAY_OK;
 }
 
 void increasing_size(DinamicArray* arr, AllErrors* error){
