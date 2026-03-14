@@ -11,7 +11,3 @@
 int inc(int x);
 int dec(int x);
 int square(int x);
-
-typedef enum{
-    TEST_OK = 1,
-} TestDef;

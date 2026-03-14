@@ -327,53 +327,6 @@ TEST(string_concat_op_both_null) {
     assert(result == NULL);
 }
 
-TEST(func_apply_to_8_inc) {
-    puts("ТЕСТ 20.1");
-    puts("---func_apply_to_8: применение inc к 8---");
-    AllErrors errors;
-    int result;
-    
-    func_apply_to_8(inc, &result, &errors);
-    
-    assert(errors == ARRAY_OK);
-    assert(result == 9);
-}
-
-TEST(func_apply_to_8_dec) {
-    puts("ТЕСТ 20.2");
-    puts("---func_apply_to_8: применение dec к 8---");
-    AllErrors errors;
-    int result;
-    
-    func_apply_to_8(dec, &result, &errors);
-    
-    assert(errors == ARRAY_OK);
-    assert(result == 7);
-}
-
-TEST(func_apply_to_8_square) {
-    puts("ТЕСТ 20.3");
-    puts("---func_apply_to_8: применение square к 8---");
-    AllErrors errors;
-    int result;
-    
-    func_apply_to_8(square, &result, &errors);
-    
-    assert(errors == ARRAY_OK);
-    assert(result == 64);
-}
-
-TEST(func_apply_to_8_null) {
-    puts("ТЕСТ 20.4");
-    puts("---func_apply_to_8: NULL функция---");
-    AllErrors errors;
-    int result;
-    
-    func_apply_to_8(NULL, &result, &errors);
-    
-    assert(errors == NULL_POINTER);
-}
-
 TEST(func_apply_to_arg_inc) {
     puts("ТЕСТ 21.1");
     puts("---func_apply_to_arg: применение inc к аргументу---");

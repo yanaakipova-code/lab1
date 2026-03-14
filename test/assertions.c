@@ -40,7 +40,7 @@ int assert_success(const char* expr, const char* file, size_t lineno) {
 }
 
 int print_stats(){
-    fprintf(stderr, "\n\n%d of %d тест завершен. %.2f Успешно\n", 
+    fprintf(stderr, "\n\n%d из %d тестов пройдены. %.2f Успешно\n", 
         success_count,
          fail_count+success_count, 
         (float)success_count/(float)(fail_count+success_count)

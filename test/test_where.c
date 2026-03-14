@@ -32,7 +32,7 @@ TEST(where_string_contains_y) {
     append(arr, "elephant", &errors);
     append(arr, "dog", &errors);
     append(arr, "butterfly", &errors);
-    append(arr, "yabby ", &errors);
+    append(arr, "yabby", &errors);
 
     DinamicArray* result = where(arr, string_contains_y, &errors);
     assert(errors == ARRAY_OK);

@@ -38,19 +38,6 @@ void print_error(const char* context){
     }
 }
 
-void print_menu(){
-    printf("-------------------------------------------------\n");
-    puts("1. Создать массив (строки)");  
-    puts("2. Создать массив (функции)");
-    puts("3. Добавить элемент");
-    puts("4. Показать массив");
-    puts("5. MAP - применить преобразование");
-    puts("6. WHERE - фильтрация");
-    puts("7. REDUCE - свертка");
-    puts("8. CONCAT - конкатенация");
-    printf("Ваш выбор: ");
-}
-
 void create_string_array(){
     if (current_array){
         destroy_array(current_array, &last_error);
@@ -150,14 +137,31 @@ void show_array(){
     }
     
     puts("Текущий массив:");
-    char* array_str = array_to_string(current_array, &last_error);
-    if (last_error == ARRAY_OK && array_str) {
-        printf("%s\n", array_str);
-        free(array_str);
+    
+    if (current_array->type->clone == func_clone) {
+        printf("[");
+        for (unsigned int i = 0; i < current_array->size; i++) {
+            IntFunc f = (IntFunc)get(current_array, i, &last_error);
+            
+            if (f == inc) printf("inc");
+            else if (f == dec) printf("dec");
+            else if (f == square) printf("square");
+            else printf("?");
+            
+            if (i < current_array->size - 1) printf(", ");
+        }
+        printf("]\n");
     } else {
-        print_error("show_array");
+        char* array_str = array_to_string(current_array, &last_error);
+        if (last_error == ARRAY_OK && array_str) {
+            printf("%s\n", array_str);
+            free(array_str);
+        } else {
+            print_error("show_array");
+        }
     }
 }
+
 
 void string_to_upper(const void* src, void* dst, AllErrors* error){
     const char* str = (const char*)src;
@@ -258,18 +262,7 @@ void func_apply_to_arg(const void* src, void* dst, AllErrors* error) {
     
     *(int*)dst = result;
 
-    if(error)*error = NULL_POINTER;
-}
-
-void func_apply_to_8(const void* src, void* dst, AllErrors* error) {
-    IntFunc f = (IntFunc)src;
-    if (!f){
-        if(!error)*error = NULL_POINTER;
-        return;
-    }
-    int result = f(8);
-    *(int*)dst = result;
-    if (error) *error = ARRAY_OK;
+    if(error)*error = ARRAY_OK;
 }
 
 int func_even(const void * elem, AllErrors* error) {
@@ -345,8 +338,7 @@ void do_map() {
     }
     else if (current_array->type->clone == func_clone) {
         puts("Выберите аргумент:");
-        puts("1. Применить к 8");
-        puts("2. Применить к введенному числу");
+        puts("1. Применить к введенному числу");
         printf("Ваш выбор: ");
         
         unsigned int choice;
@@ -356,8 +348,6 @@ void do_map() {
         void (*transform)(const void*, void*, AllErrors*) = NULL;
         
         if (choice == 1) {
-            transform = func_apply_to_8;
-        } else if (choice == 2) {
             printf("Введите число: ");
             scanf("%d", &current_arg);
             clear_input();
@@ -528,6 +518,7 @@ void do_reduce() {
         if (result) {
             printf("Результат reduce: композиция функций\n");
             int test_val = ((IntFunc)result)(5);
+            printf("Результат применения к 5: %d\n", test_val);
         } else {
             print_error("reduce");
         }

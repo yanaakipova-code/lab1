@@ -6,5 +6,5 @@ typedef struct {
     void (*free)(void *, AllErrors*);
     void* (*clone)(const void *,  AllErrors*);
     char* (*to_string)(const void*, AllErrors*);
-    unsigned int needs_free;
+    unsigned int a_pointer;
 } TypeInfo;

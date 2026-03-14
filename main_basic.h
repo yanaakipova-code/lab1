@@ -6,7 +6,6 @@
 
 void clear_input();
 void print_error(const char* context);
-void print_menu();
 
 void create_string_array();
 void create_func_array();
@@ -27,7 +26,6 @@ int string_contains_y(const void* elem, AllErrors* error);
 void* string_concat_op(const void* a, const void* b, AllErrors* error);
 
 void func_apply_to_arg(const void* src, void* dst, AllErrors* error);
-void func_apply_to_8(const void* src, void* dst, AllErrors* error);
 int func_even(const void* a, AllErrors* error);
 int func_greater_than_10(const void * a, AllErrors* error);
 void * func_compose(const void* a, const void* b, AllErrors* error);

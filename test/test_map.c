@@ -44,30 +44,6 @@ TEST(map_string_to_lower) {
     assert(strcmp(val2, "test") == 0);
 }
 
-TEST(map_func_apply_to_8) {
-    puts("ТЕСТ 7.3");
-    puts("---map: применение функций к числу 8---");
-    AllErrors errors;
-    DinamicArray* arr = create_array(get_func_type_info(), &errors);
-    append(arr, inc, &errors);
-    append(arr, dec, &errors);
-    append(arr, square, &errors);
-    assert(errors == ARRAY_OK);
-    
-    DinamicArray* result = map(arr, func_apply_to_8, get_int_type_info(), &errors);
-    assert(errors == ARRAY_OK);
-    assert(result != NULL);
-    assert(result->size == 3);
-    
-    int* val0 = (int*)get(result, 0, &errors);
-    int* val1 = (int*)get(result, 1, &errors);
-    int* val2 = (int*)get(result, 2, &errors);
-    
-    assert(*val0 == 9);
-    assert(*val1 == 7);
-    assert(*val2 == 64);
-  }
-
 TEST(map_null_array) {
     puts("ТЕСТ 7.4");
     puts("---map: проверка с NULL массивом---");

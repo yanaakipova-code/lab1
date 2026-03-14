@@ -1,7 +1,8 @@
-#include "main_basic.h"
+#include "intr.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h> 
+
 
 int main() {
     SetConsoleOutputCP(65001);
@@ -9,54 +10,15 @@ int main() {
 
     int choice;
     
-    while (1) {
-        print_menu();
-        
-        if (scanf("%d", &choice) != 1) {
-            puts("Ошибка ввода. Пожалуйста, введите число.");
-            clear_input();
-        }
-        clear_input();
-        
-        switch (choice) {
-            case 1:
-                create_string_array();
-                break;
-                
-            case 2:
-                create_func_array();
-                break;
-                
-            case 3:
-                add_element();
-                break;
-                
-            case 4:
-                show_array();
-                break;
-
-            case 5:
-                do_map();
-                break;
-                
-            case 6:
-                do_where();
-                break;
-                
-            case 7:
-                do_reduce();
-                break;
-                
-            case 8:
-                do_concatenation();
-                break;
-                
-            default:
-                puts("Неверный выбор. Пожалуйста, выберите от 0 до 8.");
-        }
-    }
-    return 0;
+    interface_print();
 }
 
 
- 
+ /*
+ в main у нас только вызов интерфейса (вынести в отдельный файл) и тестов, никакой логики + 
+в map надо переписать логику +
+if (error) - надо сразу проверять, чтоьы ошибки обязательно были +
+resize - вызывается только внутри метода push, когда size = capacity, и никогда больше +
+concat - можно сразу вычислить размер итогового массива +
+тесты в одну папку + 
+ */

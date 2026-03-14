@@ -51,7 +51,7 @@ TypeInfo* get_func_type_info() {
         func_type_info->clone = func_clone;
         func_type_info->free = func_free;
         func_type_info->to_string  = func_to_string;
-        func_type_info->needs_free = 1;
+        func_type_info->a_pointer = 1;
     }
     return func_type_info;
 }

@@ -1,37 +1,54 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -I.
+CFLAGS = -Wall -Wextra -I. -g
 AR = ar
 ARFLAGS = rcs
 
-LIB_SRCS = DynamicArray.o \
-	StringType.o \
-	FuncType.o \
-	IntType.o \
-	 main_basic.o
+SRC_DIR = .
+OBJ_DIR = obj
+BUILD_DIR = build
 
-LIB_OBJS = $(LIB_SRCS:.c=.o)
-MAIN_SRC = main.c
+LIB = $(BUILD_DIR)/libdynamicarray.a
+TARGET = $(BUILD_DIR)/program.exe
 
-LIB_NAME = libdynamicarray.a
-TARGET = program.exe
+LIB_SRCS = DynamicArray.c \
+           StringType.c \
+           FuncType.c \
+           IntType.c
 
-.PHONY = all clean run lib
+MAIN_SRCS = main.c \
+            main_basic.c \
+            intr.c
+
+LIB_OBJS = $(LIB_SRCS:%.c=$(OBJ_DIR)/%.o)
+MAIN_OBJS = $(MAIN_SRCS:%.c=$(OBJ_DIR)/%.o)
+
+HEADERS = ArrayEror.h \
+          TypeInfo.h \
+          DynamicArray.h \
+          StringType.h \
+          FuncType.h \
+          IntType.h \
+          main_basic.h \
+          intr.h
+
+.PHONY: all clean run
 
 all: $(TARGET)
 
-$(TARGET): $(SRCS)
-	$(CC) $(CFLAGS) $(MAIN_SRC) -o $@ $(LIB_NAME) 
-
-lib: $(LIB_NAME)
-
-$(LIB_NAME): $(LIB_OBJS)
+$(LIB): $(LIB_OBJS)
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(AR) $(ARFLAGS) $@ $^
 
-%.o: %.c
+$(TARGET): $(MAIN_OBJS) $(LIB)
+	$(CC) $(CFLAGS) $(MAIN_OBJS) -L$(BUILD_DIR) -ldynamicarray -o $(TARGET)
+
+$(OBJ_DIR)/%.o: %.c $(HEADERS)
+	@if not exist $(OBJ_DIR) mkdir $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 run: $(TARGET)
 	$(TARGET)
 
-clean: 
-	del /q $(TARGET) *.o *.a
+clean:
+	@if exist $(OBJ_DIR) rmdir /s /q $(OBJ_DIR)
+	@if exist $(BUILD_DIR) rmdir /s /q $(BUILD_DIR)

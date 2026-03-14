@@ -32,7 +32,7 @@ TEST(reduce_func_compose) {
     assert(errors == ARRAY_OK);
     assert(result != NULL);
     IntFunc composed = (IntFunc)result;
-    assert(composed(5) == 36);
+    assert(composed(5) == 25);
     
     destroy_array(arr, &errors);
 }

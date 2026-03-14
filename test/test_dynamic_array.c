@@ -10,7 +10,7 @@ TEST(create_array_string){
     assert(errors == ARRAY_OK);
     assert(arr != NULL);
     assert(arr->size == 0);
-    assert(arr->capacity == 2);
+    assert(arr->capacity == 4);
     
     destroy_array(arr, &errors);
 }
@@ -25,7 +25,7 @@ TEST(test_create_array_func){
     assert(errors == ARRAY_OK);
     assert(arr != NULL);
     assert(arr->size == 0);
-    assert(arr->capacity == 2);
+    assert(arr->capacity == 4);
     
     destroy_array(arr, &errors);
 }
