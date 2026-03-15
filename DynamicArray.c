@@ -261,33 +261,41 @@ DinamicArray* map(const DinamicArray* arr,
                 TypeInfo* new_type, AllErrors* error) {
     error_null(error);
     
-    if(arr == NULL || transform == NULL || new_type == NULL){
-        if (error)*error == NULL_POINTER;
+    if (arr == NULL || transform == NULL || new_type == NULL) {
+        if (error) *error = NULL_POINTER;
+        return NULL;
     }
 
     DinamicArray* result = create_array(new_type, error);
-    if(*error != ARRAY_OK) return NULL;
+    if (*error != ARRAY_OK) return NULL;
 
-    for (unsigned int i = 0; i < arr->size; i++){
-        void* src_ptr = (char*)arr->data + (i*arr->type->elem_size());
+    size_t src_elem_size = arr->type->elem_size();
+
+
+    for (unsigned int i = 0; i < arr->size; i++) {
+        void* src_ptr = (char*)arr->data + (i * src_elem_size);
         void* src_elem;
-        if(arr->type->a_pointer){
+        
+        if (arr->type->a_pointer) {
             src_elem = *(void**)src_ptr;
-        }else{
+        } else {
             src_elem = src_ptr;
         }
+        
         void* temp = malloc(new_type->elem_size());
         if (!temp) {
             if (error) *error = MEMORY_ALLOCATION_FAILED;
             destroy_array(result, NULL);
             return NULL;
         }
+        
         transform(src_elem, temp, error);
         if (*error != ARRAY_OK) {
             free(temp);
             destroy_array(result, NULL);
             return NULL;
         }
+        
         if (new_type->a_pointer) {
             add_to_array(result, *(void**)temp, error);
         } else {
@@ -300,8 +308,8 @@ DinamicArray* map(const DinamicArray* arr,
             return NULL;
         }
     }
+    
     return result;
-
 }
 
 DinamicArray* where(const DinamicArray* arr, 
@@ -318,7 +326,7 @@ DinamicArray* where(const DinamicArray* arr,
 
     size_t elem_size = arr->type->elem_size(); 
 
-    for (unsigned int i = 0; i < elem_size; i++) {
+    for (unsigned int i = 0; i < arr->size; i++) {
         void* elem_ptr = (char*)arr->data + (i * elem_size);
         void* elem;
         
