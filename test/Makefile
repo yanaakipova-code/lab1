@@ -13,7 +13,7 @@ PROJ_SRCS = $(SRC_DIR)/DynamicArray.c \
             $(SRC_DIR)/IntType.c \
             $(SRC_DIR)/main_basic.c
 
-FRAME_SRCS = assertions.c testing.c mork.c
+FRAME_SRCS = assertions.c testing.c test_abort.c
 
 TEST_SRCS = run_all_tests.c \
             test_dynamic_array.c \
@@ -47,7 +47,6 @@ dirs:
 
 $(TARGET): $(PROJ_OBJS) $(FRAME_OBJS) $(TEST_OBJS)
 	$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS)
-	@echo "Тесты собраны: $@"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADERS)
 	@if not exist $(OBJ_DIR) mkdir $(OBJ_DIR)
