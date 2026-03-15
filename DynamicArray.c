@@ -109,7 +109,7 @@ void append(DinamicArray* arr, const void* elem, AllErrors* error) {
     size_t elem_size = arr->type->elem_size(); 
     void* dest = element_ptr(arr, arr->size);
     
-    if (elem_size == sizeof(char*) || elem_size == sizeof(void*)) {
+    if (arr->type->a_pointer) {
         void* copy = arr->type->clone(elem, error);
         if (*error != ARRAY_OK) return;
         *(void**)dest = copy;
@@ -138,7 +138,7 @@ void* get(const DinamicArray* arr, int index, AllErrors* error) {
     void* elem_ptr = element_ptr((DinamicArray*)arr, index);
     
     if (error) *error = ARRAY_OK;
-    if (elem_size == sizeof(char*) || elem_size == sizeof(void*)) {
+    if (arr->type->a_pointer) {
         return *(void**)elem_ptr;
     } else {
         return elem_ptr;
@@ -167,7 +167,7 @@ char* array_to_string(const DinamicArray* arr, AllErrors* error) {
         void* elem_ptr = element_ptr((DinamicArray*)arr, i);
         void* elem;
         
-        if (elem_size == sizeof(char*) || elem_size == sizeof(void*)) {
+        if (arr->type->a_pointer) {
             elem = *(void**)elem_ptr;
         } else {
             elem = elem_ptr;
@@ -199,7 +199,7 @@ char* array_to_string(const DinamicArray* arr, AllErrors* error) {
         void* elem_ptr = element_ptr((DinamicArray*)arr, i);
         void* elem;
         
-        if (elem_size == sizeof(char*) || elem_size == sizeof(void*)) {
+        if (arr->type->a_pointer) {
             elem = *(void**)elem_ptr;
         } else {
             elem = elem_ptr;
@@ -244,7 +244,7 @@ void add_to_array(DinamicArray* arr, void* elem, AllErrors* error) {
     size_t elem_size = arr->type->elem_size(); 
     void* dest = element_ptr(arr, arr->size);
     
-    if (elem_size == sizeof(char*) || elem_size == sizeof(void*)) {
+    if (arr->type->a_pointer) {
         *(void**)dest = elem;
     } else {
         memcpy(dest, elem, elem_size);
@@ -414,7 +414,7 @@ DinamicArray* concatenation(DinamicArray* arr1, DinamicArray* arr2,
         if (error) *error = NULL_POINTER;
         return NULL;
     }
-    /*типы должны быть одинаковые*/
+
     if (arr1->type->clone != arr2->type->clone ||
         arr1->type->free != arr2->type->free ||
         arr1->type->to_string != arr2->type->to_string) {
